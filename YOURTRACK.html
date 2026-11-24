@@ -1,0 +1,1170 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>YOURTRACK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500;1,700&display=swap">
+<style>
+/* Layout concept: a printed study journal. Masthead with a double rule, asymmetric front page
+   (countdown column + pinned note), thin-ruled lists instead of cards, top nav on laptop, bottom tabs on phone. */
+:root{
+  --brown:#4E342E;
+  --cream:#F8F4E7;
+  --orange:#CC5500;
+  --orange-ink:#A33F00;
+  --paper:#FFFCF2;
+  --cream-2:#EDE5CF;
+  --line:rgba(78,52,46,.28);
+  --soft:#6B534D;
+  --ok:#3B6A37;
+  --bad:#9E2A1D;
+  --on-orange:#FFF8EC;
+  --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+  --sans:'DM Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --hand:'Caveat','Bradley Hand','Segoe Script',cursive;
+  --gutter:clamp(16px,4vw,64px);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%;font-size:clamp(16px,.4vw + 10px,19px)}
+body{
+  background-color:var(--cream);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .2 0 0 0 0 .18 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  color:var(--brown);
+  font:400 1rem/1.55 var(--sans);
+  min-height:100%;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:700;line-height:1.12;margin:0;text-wrap:balance}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--orange-ink);outline-offset:2px}
+.on-dark :focus-visible{outline-color:var(--cream)}
+.wrap{max-width:1680px;margin-inline:auto;padding-inline:var(--gutter)}
+.eyebrow{font:700 .72rem/1.2 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--orange-ink)}
+.muted{color:var(--soft)}
+.small{font-size:.875rem}
+.tnum{font-variant-numeric:lining-nums tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* top bar + masthead */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--cream);border-bottom:3px double var(--brown)}
+.top .wrap{display:flex;align-items:center;gap:1.5rem;min-height:60px}
+.logo{font:900 1.45rem/1 var(--serif);letter-spacing:.06em;text-decoration:none;color:var(--brown);background:none;border:0;padding:0;cursor:pointer}
+.logo i{color:var(--orange);font-weight:700}
+.top-links{display:none;gap:.25rem;margin-left:auto;align-items:center}
+.top-links a{padding:.5rem .8rem;text-decoration:none;font-weight:500;letter-spacing:.03em;border-bottom:2px solid transparent}
+.top-links a:hover{border-color:var(--line)}
+.top-links a[aria-current=page]{border-color:var(--orange);color:var(--orange-ink);font-weight:700}
+.top .who{margin-left:auto;font-size:.85rem;color:var(--soft)}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--brown);color:var(--cream);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -6px 18px -10px rgba(0,0,0,.5)}
+.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:58px;padding:6px 2px;text-decoration:none;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;font-weight:500;border-top:3px solid transparent;opacity:.82}
+.tabs a[aria-current=page]{border-top-color:var(--orange);opacity:1;font-weight:700;background:rgba(248,244,231,.08)}
+.tabs :focus-visible{outline-color:var(--cream);outline-offset:-4px}
+main{padding-block:1.25rem 6.5rem;min-height:70vh}
+body.auth .top,body.auth .tabs,body.in-test .tabs{display:none}
+body.in-test .top{display:none}
+body.auth main,body.in-test main{padding-bottom:2rem}
+@media(min-width:900px){
+  .tabs{display:none}
+  .top-links{display:flex}
+  .top .who{display:none}
+  main{padding-bottom:4rem}
+}
+
+/* buttons, fields */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.65rem 1.2rem;border:1.5px solid var(--brown);background:transparent;color:var(--brown);font:700 .82rem/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;border-radius:2px;cursor:pointer;text-decoration:none;transition:background .15s,color .15s,transform .15s}
+.btn:hover{background:var(--brown);color:var(--cream)}
+.btn.pri{background:var(--orange);border-color:var(--orange);color:var(--on-orange)}
+.btn.pri:hover{background:var(--brown);border-color:var(--brown)}
+.btn.dark{background:var(--brown);color:var(--cream)}
+.btn.dark:hover{background:var(--orange);border-color:var(--orange)}
+.btn.sm{min-height:40px;padding:.45rem .8rem;font-size:.72rem}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn.danger:hover{background:var(--bad);color:var(--cream)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn.block{width:100%}
+.link{background:none;border:0;padding:.4rem 0;min-height:44px;color:var(--orange-ink);font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.field{display:grid;gap:.35rem;min-width:0}
+.field>span,.field>label{font:700 .72rem/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase}
+.inp{width:100%;min-height:48px;padding:.6rem .8rem;border:1.5px solid var(--brown);background:var(--paper);border-radius:2px;font-size:1rem}
+textarea.inp{min-height:110px;resize:vertical}
+.hint{font-size:.8rem;color:var(--soft)}
+.form{display:grid;gap:1rem}
+.cols2{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
+.form-err{color:var(--bad);font-weight:700;font-size:.9rem;min-height:1.2em}
+.chk{display:flex;align-items:center;gap:.6rem;min-height:44px}
+.chk input{width:22px;height:22px;accent-color:var(--orange)}
+
+/* common blocks */
+.card{background:var(--paper);border:1px solid var(--line);box-shadow:0 1px 0 var(--line),0 12px 22px -16px rgba(78,52,46,.5);padding:1.25rem;min-width:0}
+.rule{border:0;border-top:1px solid var(--brown);margin:0}
+.rule.dbl{border-top:3px double var(--brown)}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--brown);padding-bottom:.5rem;margin-block:2.25rem 1rem;flex-wrap:wrap}
+.sec-h h2{font-size:clamp(1.5rem,4vw,2rem)}
+.page-h{display:grid;gap:.6rem;margin-block:.5rem 1.5rem}
+.page-h h1{font-size:clamp(2rem,7vw,3.6rem);letter-spacing:-.01em}
+.page-h p{max-width:62ch;color:var(--soft)}
+.crumbs{display:flex;flex-wrap:wrap;gap:.35rem;font-size:.82rem;color:var(--soft);align-items:center}
+.crumbs button{background:none;border:0;padding:.3rem 0;min-height:36px;cursor:pointer;color:var(--orange-ink);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.grid>*{max-width:560px}
+.chip{display:inline-flex;align-items:center;font:700 .68rem/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;padding:.3rem .5rem;border:1px solid currentColor;border-radius:2px;white-space:nowrap}
+.chip.ok{color:var(--ok)}.chip.bad{color:var(--bad)}.chip.or{color:var(--orange-ink)}.chip.mu{color:var(--soft)}
+.bar{height:10px;background:var(--cream-2);border:1px solid var(--brown);position:relative;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--orange);width:0;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+.bar.thin{height:7px}
+.pcrow{display:grid;grid-template-columns:1fr auto;gap:.25rem .75rem;align-items:end}
+.pcrow .bar{grid-column:1/-1}
+.pcrow b{font:700 1.1rem var(--serif)}
+
+/* auth */
+.auth-grid{display:grid;min-height:100vh}
+.auth-side{background:var(--brown);color:var(--cream);padding:2rem var(--gutter);display:grid;align-content:space-between;gap:2rem}
+.auth-side .logo{color:var(--cream);font-size:1.7rem}
+.auth-side .big{font:900 clamp(2.2rem,8vw,4.4rem)/1 var(--serif);max-width:12ch}
+.auth-side .big em{color:#FF9A4D;font-weight:500}
+.auth-side p{max-width:36ch;opacity:.85}
+.auth-main{padding:2rem var(--gutter) 3rem;display:grid;align-content:center;justify-items:center}
+.auth-box{width:100%;max-width:460px;display:grid;gap:1.25rem}
+.auth-box h1{font-size:2.2rem}
+.demo{border:1px dashed var(--brown);padding:.8rem;display:grid;gap:.5rem;font-size:.85rem;background:var(--paper)}
+.demo .row{display:flex;flex-wrap:wrap;gap:.5rem}
+@media(min-width:900px){.auth-grid{grid-template-columns:1fr 1fr}.auth-side{padding:3rem}}
+
+/* home */
+.dateline{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-bottom:1px solid var(--brown);padding-bottom:.4rem;font:700 .72rem var(--sans);letter-spacing:.16em;text-transform:uppercase}
+.greet{font-size:clamp(2.2rem,8vw,4.6rem);margin-block:1rem .5rem;letter-spacing:-.015em}
+.greet em{color:var(--orange);font-weight:500}
+.front{display:grid;gap:2.5rem;margin-block:1.5rem 0;align-items:start}
+@media(min-width:900px){.front{grid-template-columns:1.55fr 1fr;gap:3.5rem}}
+.cd{display:grid;gap:.9rem}
+.cd-title{font:500 italic clamp(1.2rem,3vw,1.6rem)/1.2 var(--serif)}
+.cd-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:3px double var(--brown);border-bottom:1px solid var(--brown)}
+.cd-cell{display:grid;justify-items:start;padding:.9rem .5rem .8rem;gap:.1rem;border-left:1px solid var(--line)}
+.cd-cell:first-child{border-left:0;padding-left:0}
+.cd-cell b{font:900 clamp(2.3rem,10.5vw,5.6rem)/1 var(--serif);font-variant-numeric:lining-nums tabular-nums;color:var(--brown)}
+.cd-cell:first-child b{color:var(--orange)}
+.cd-cell span{font:700 .62rem var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--soft)}
+.cd-done{font:900 clamp(2rem,8vw,4rem)/1.05 var(--serif);color:var(--orange);padding-block:1rem;border-top:3px double var(--brown);border-bottom:1px solid var(--brown)}
+.noteWrap{display:grid;justify-items:center;padding:1.2rem 0 .5rem}
+.note{position:relative;width:min(100%,420px);padding:2.3rem 1.5rem 1.6rem;background:var(--paper) repeating-linear-gradient(to bottom,transparent 0 33px,rgba(78,52,46,.14) 33px 34px);border:1px solid var(--line);box-shadow:0 2px 0 var(--line),0 18px 28px -14px rgba(78,52,46,.55);transform:rotate(-2.2deg);transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s;font:500 1.9rem/34px var(--hand);overflow-wrap:anywhere}
+.note:hover{transform:rotate(.6deg) translateY(-4px)}
+.note::before{content:"";position:absolute;top:-11px;left:50%;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff9a4d,var(--orange) 55%,#8c3a00);box-shadow:0 6px 6px -3px rgba(0,0,0,.4)}
+.note small{display:block;font:700 .68rem var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-top:.6rem;line-height:1}
+.strip{display:grid;gap:1.25rem;margin-top:2.5rem;padding-block:1.25rem;border-top:1px solid var(--brown);border-bottom:1px solid var(--brown);align-items:center}
+@media(min-width:760px){.strip{grid-template-columns:1fr auto;gap:3rem}}
+.strip .big{font:900 clamp(2.4rem,7vw,3.6rem)/1 var(--serif);color:var(--orange)}
+
+/* subject cards + lists */
+.subj{display:grid;gap:.9rem;align-content:start;text-align:left;cursor:pointer;color:inherit;font:inherit;transition:transform .2s,box-shadow .2s;border-top:3px solid var(--brown)}
+.subj:hover{transform:translateY(-3px)}
+.subj .ic{font:900 2.6rem/1 var(--serif);color:var(--orange)}
+.subj h3{font-size:1.4rem}
+.subj p{font-size:.9rem;color:var(--soft)}
+.lesson{display:grid;gap:.8rem;padding-block:1.4rem;border-top:1px solid var(--brown)}
+.lesson-h{display:grid;gap:.4rem}
+.lesson-h h3{font-size:1.5rem}
+.rows{display:grid}
+.row-btn{display:flex;align-items:center;gap:1rem;justify-content:space-between;padding:.85rem .2rem;min-height:56px;border:0;border-top:1px solid var(--line);background:transparent;cursor:pointer;text-align:left;width:100%;color:inherit;font:inherit}
+.row-btn:hover{background:var(--cream-2)}
+.row-btn .t{font-weight:700;min-width:0;overflow-wrap:anywhere}
+.row-btn .m{display:flex;gap:.6rem;align-items:center;flex-shrink:0}
+.empty{display:grid;gap:.5rem;justify-items:start;padding:2rem 1.25rem;border:1px dashed var(--brown);background:var(--paper)}
+.empty h3{font-size:1.3rem;letter-spacing:.06em}
+.test-card{display:grid;gap:.9rem}
+.test-card h3{font-size:1.35rem}
+.meta{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.85rem;color:var(--soft)}
+
+/* test taking */
+.take-bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--brown);color:var(--cream)}
+.take-bar .bar-in{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:64px}
+.take-bar .trail{font-size:.78rem;opacity:.85;display:block;overflow-wrap:anywhere}
+.take-bar .exit{background:none;border:0;color:var(--cream);cursor:pointer;font-weight:700;text-decoration:underline;text-underline-offset:3px;padding:.3rem 0;min-height:36px}
+.timer{display:grid;justify-items:end;line-height:1;flex-shrink:0}
+.timer small{font:700 .58rem var(--sans);letter-spacing:.18em;opacity:.8}
+.timer b{font:900 1.9rem/1.1 var(--serif);font-variant-numeric:lining-nums tabular-nums}
+.timer.warn b{color:#FFB070;animation:pulse 1s steps(2) infinite}
+.take-grid{display:grid;gap:1.5rem;padding-top:1.5rem;padding-bottom:7.5rem}
+@media(min-width:900px){.take-grid{grid-template-columns:minmax(0,1fr) 340px;gap:4rem;padding-bottom:3rem;align-items:start}.take-aside{position:sticky;top:90px}}
+.q-h{font:700 clamp(1.5rem,4.2vw,2.2rem)/1.25 var(--serif);margin-block:.6rem 1.4rem;overflow-wrap:anywhere}
+.qwrap{animation:slidein .35s ease both}
+.opts{display:grid;gap:.7rem}
+.opt{display:flex;gap:.9rem;align-items:center;padding:.9rem 1rem;min-height:60px;border:1.5px solid var(--brown);background:var(--paper);cursor:pointer;border-radius:2px;transition:background .15s,transform .15s}
+.opt:hover{background:var(--cream-2)}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt .ltr{display:grid;place-items:center;width:34px;height:34px;flex-shrink:0;border:1.5px solid var(--brown);border-radius:50%;font:700 .9rem var(--sans)}
+.opt.sel{background:var(--brown);color:var(--cream)}
+.opt.sel .ltr{background:var(--orange);border-color:var(--orange);color:var(--on-orange)}
+.opt:has(input:focus-visible){outline:3px solid var(--orange-ink);outline-offset:2px}
+.opt>span:last-child{min-width:0;overflow-wrap:anywhere}
+.actions{position:fixed;left:0;right:0;bottom:0;z-index:35;background:var(--cream);border-top:3px double var(--brown);padding:.7rem var(--gutter) calc(.7rem + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:1fr auto 1fr;gap:.6rem}
+.actions .btn{width:100%}
+@media(min-width:900px){.actions{position:static;border:0;padding:1.5rem 0 0;background:none;grid-template-columns:auto auto auto 1fr;justify-content:start}.actions .btn{width:auto;min-width:140px}}
+.counts{display:grid;grid-template-columns:repeat(2,1fr);gap:.4rem .8rem;margin-block:.8rem;font-size:.9rem}
+.counts div{display:flex;justify-content:space-between;border-bottom:1px dotted var(--soft);padding-bottom:.2rem}
+.counts b{font-variant-numeric:lining-nums tabular-nums}
+.navg{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:.45rem}
+.navg button{min-height:46px;border:1.5px solid var(--brown);background:var(--paper);font:700 .95rem var(--sans);cursor:pointer;position:relative;border-radius:2px}
+.navg button.a{background:var(--brown);color:var(--cream)}
+.navg button.m{background:var(--orange);border-color:var(--orange);color:var(--on-orange)}
+.navg button.m.a::after{content:"";position:absolute;right:3px;top:3px;width:8px;height:8px;background:var(--brown);border-radius:50%}
+.navg button.cur{outline:3px solid var(--orange-ink);outline-offset:2px}
+.navg button[disabled]{opacity:.5;cursor:default}
+.legend{display:flex;flex-wrap:wrap;gap:.4rem .9rem;font-size:.75rem;color:var(--soft);margin-top:.8rem}
+.legend i{display:inline-block;width:12px;height:12px;border:1.5px solid var(--brown);margin-right:.3rem;vertical-align:-1px}
+.legend .a i{background:var(--brown)}.legend .m i{background:var(--orange);border-color:var(--orange)}
+.mark-on{background:var(--orange);border-color:var(--orange);color:var(--on-orange)}
+.mark-on:hover{background:var(--brown);border-color:var(--brown)}
+
+/* result */
+.res-head{display:grid;gap:1.2rem;border-top:3px double var(--brown);border-bottom:1px solid var(--brown);padding-block:1.5rem}
+@media(min-width:760px){.res-head{grid-template-columns:1fr auto;align-items:end}}
+.res-score{font:900 clamp(3.4rem,16vw,8rem)/.95 var(--serif);font-variant-numeric:lining-nums tabular-nums}
+.res-score small{font-size:.35em;font-weight:500;color:var(--soft)}
+.res-pct{font:500 italic clamp(1.6rem,5vw,2.4rem) var(--serif);color:var(--orange-ink)}
+.stamp{display:inline-block;font:900 clamp(1.4rem,4vw,2rem)/1 var(--serif);letter-spacing:.12em;border:4px double currentColor;padding:.5rem 1rem;transform:rotate(-5deg);animation:stampin .5s cubic-bezier(.2,1.4,.4,1) both}
+.stamp.ok{color:var(--ok)}.stamp.no{color:var(--orange-ink)}
+.dl{display:grid;gap:0 3rem}
+@media(min-width:760px){.dl{grid-template-columns:1fr 1fr}}
+.dl div{display:flex;justify-content:space-between;gap:1rem;padding:.7rem 0;border-bottom:1px dotted var(--soft)}
+.dl dt{color:var(--soft)}.dl dd{margin:0;font-weight:700;font-variant-numeric:lining-nums tabular-nums;text-align:right}
+.rev{display:grid;gap:1rem}
+.rev article{padding:1rem 0;border-top:1px solid var(--brown);display:grid;gap:.5rem}
+.rev .a-ok{color:var(--ok);font-weight:700}.rev .a-bad{color:var(--bad);font-weight:700}
+.rev ol{margin:0;padding-left:1.2rem}
+.rev li.cor{color:var(--ok);font-weight:700}.rev li.wr{color:var(--bad);text-decoration:line-through}
+.exp{background:var(--cream-2);padding:.6rem .8rem;font-size:.9rem}
+.checkdraw{width:44px;height:44px}
+.checkdraw circle{stroke-dasharray:140;stroke-dashoffset:140;animation:draw .6s ease forwards}
+.checkdraw path{stroke-dasharray:30;stroke-dashoffset:30;animation:draw .4s .45s ease forwards}
+.banner{display:flex;gap:.9rem;align-items:center;padding:.8rem 1rem;border:1.5px solid var(--ok);color:var(--ok);background:var(--paper);margin-bottom:1rem;font-weight:700}
+.banner span{display:block;font-weight:400;color:var(--brown);font-size:.9rem}
+
+/* envelope + letter */
+.env-zone{position:relative;display:grid;gap:1.2rem;justify-items:center;padding-block:2rem;border-bottom:1px solid var(--brown);overflow:hidden}
+.env-wrap{display:grid;justify-items:center;gap:1rem;width:100%;max-height:420px;transition:max-height .9s ease,opacity .6s ease}
+.env-wrap.gone{max-height:0;opacity:0;pointer-events:none;overflow:hidden}
+.env-float{padding-top:100px;width:min(100%,320px)}
+.env{position:relative;width:100%;height:200px;perspective:900px;filter:drop-shadow(0 18px 14px rgba(78,52,46,.28))}
+.env:not(.open){animation:floaty 3.4s ease-in-out infinite}
+.env .back{position:absolute;inset:0;background:#DCCFAA;border:1.5px solid var(--brown)}
+.env .paper{position:absolute;left:7%;right:7%;top:12px;bottom:10px;background:var(--paper);border:1px solid var(--line);padding:16px 14px;display:grid;gap:10px;align-content:start;z-index:1;transition:transform 1s cubic-bezier(.3,.9,.3,1) 1s}
+.env .paper span{display:block;height:3px;background:var(--line)}
+.env .paper span:nth-child(1){width:55%}.env .paper span:nth-child(2){width:90%}.env .paper span:nth-child(3){width:75%}
+.env.open .paper{transform:translateY(-92px)}
+.env .pocket{position:absolute;inset:0;z-index:3;background:#EADFC2;clip-path:polygon(0 0,50% 56%,100% 0,100% 100%,0 100%)}
+.env .flap{position:absolute;left:0;right:0;top:0;height:56%;background:#E1D5B3;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .7s cubic-bezier(.5,0,.2,1) .4s,z-index 0s .75s;z-index:3}
+.env.open .flap{transform:rotateX(180deg);z-index:0}
+.env .outline{position:absolute;inset:0;border:1.5px solid var(--brown);pointer-events:none;z-index:4}
+.env .seal{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);z-index:5;width:62px;height:62px;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,#ff9a4d,var(--orange) 55%,#8c3a00);color:var(--on-orange);font:700 .6rem var(--sans);letter-spacing:.12em;cursor:pointer;box-shadow:0 5px 8px -3px rgba(0,0,0,.5),0 0 0 0 rgba(204,85,0,.5)}
+.env:not(.open) .seal{animation:bob 1.8s ease-in-out infinite,ring 2s ease-out infinite}
+.env.open .seal{pointer-events:none;animation:crack .55s ease forwards}
+.tap{letter-spacing:.14em;text-transform:uppercase;font-weight:700;animation:fade 1s .3s both}
+.letter-full{display:grid;grid-template-rows:0fr;transition:grid-template-rows 1.3s cubic-bezier(.2,.8,.2,1);width:100%}
+.letter-full.show{grid-template-rows:1fr}
+.letter-in{overflow:hidden;min-height:0}
+.letter{max-width:560px;margin:6px auto 14px;padding:2rem 1.6rem;background:var(--paper) repeating-linear-gradient(to bottom,transparent 0 35px,rgba(78,52,46,.13) 35px 36px);border:1px solid var(--line);box-shadow:0 18px 30px -16px rgba(78,52,46,.55);font:500 1.7rem/36px var(--hand);overflow-wrap:anywhere;transform-origin:top center}
+.letter p{margin:0}
+.letter h3{font:900 1.8rem/1.2 var(--serif);margin-bottom:.8rem}
+.letter .sig{display:block;margin-top:1rem;text-align:right;color:var(--orange-ink);font-weight:700}
+.letter-full:not(.show) .ln{opacity:0}
+.letter-full.show .letter{animation:unfold 1.2s cubic-bezier(.2,.8,.2,1) both}
+.letter-full.show .ln{animation:inkin .8s ease both;animation-delay:calc(.9s + var(--i)*.28s)}
+.cf{position:absolute;left:50%;top:42%;width:8px;height:14px;pointer-events:none;opacity:0;animation:cf 1.7s cubic-bezier(.15,.7,.3,1) var(--d) forwards}
+
+/* modal, toast, skeleton */
+.modal{position:fixed;inset:0;z-index:100;background:rgba(40,25,20,.55);display:grid;place-items:center;padding:1rem;overflow:auto;animation:fade .2s}
+.dialog{width:min(100%,560px);max-height:calc(100vh - 2rem);overflow:auto;background:var(--cream);border:1.5px solid var(--brown);padding:1.5rem;display:grid;gap:1rem;box-shadow:0 30px 60px -20px rgba(0,0,0,.6)}
+.dialog h2{font-size:1.7rem;letter-spacing:.02em}
+.dialog .btns{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:flex-end}
+.dialog .btns .btn{flex:1 1 140px}
+#toasts{position:fixed;left:0;right:0;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:120;display:grid;gap:.5rem;justify-items:center;padding-inline:1rem;pointer-events:none}
+@media(min-width:900px){#toasts{bottom:24px}}
+body.in-test #toasts{bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+.toast{pointer-events:auto;max-width:min(100%,440px);background:var(--brown);color:var(--cream);border-left:6px solid var(--orange);padding:.8rem 1rem;box-shadow:0 12px 24px -10px rgba(0,0,0,.5);animation:slidein .3s both;font-size:.92rem}
+.toast.err{border-left-color:#FF6A55}.toast.ok{border-left-color:#8BC47F}
+.toast b{display:block;letter-spacing:.08em;text-transform:uppercase;font-size:.72rem}
+.sk{background:linear-gradient(90deg,var(--cream-2) 25%,#F6F0DD 50%,var(--cream-2) 75%);background-size:200% 100%;animation:shimmer 1.2s linear infinite;border-radius:2px}
+.splash{min-height:60vh;display:grid;place-content:center;gap:1rem;text-align:center;justify-items:center}
+.splash .logo{font-size:2.4rem}
+.spin{width:34px;height:34px;border:3px solid var(--cream-2);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite}
+#offline{position:fixed;inset:0;z-index:200;background:var(--brown);color:var(--cream);display:grid;place-content:center;justify-items:center;gap:1.2rem;text-align:center;padding:2rem}
+#offline h2{font-size:clamp(1.8rem,6vw,3rem);letter-spacing:.06em}
+#offline .btn{border-color:var(--cream);color:var(--cream)}#offline .btn:hover{background:var(--cream);color:var(--brown)}
+
+/* admin */
+.subnav{display:flex;gap:.2rem;overflow-x:auto;border-bottom:1px solid var(--brown);margin-bottom:1.5rem;-webkit-overflow-scrolling:touch}
+.subnav a{padding:.7rem .9rem;text-decoration:none;white-space:nowrap;font-weight:500;border-bottom:3px solid transparent;min-height:44px}
+.subnav a[aria-current=page]{border-color:var(--orange);font-weight:700;color:var(--orange-ink)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));border-top:3px double var(--brown);border-bottom:1px solid var(--brown)}
+.stats div{padding:1rem .8rem;border-left:1px solid var(--line)}
+.stats div:first-child{border-left:0;padding-left:0}
+.stats b{display:block;font:900 clamp(2rem,6vw,3rem)/1 var(--serif);font-variant-numeric:lining-nums tabular-nums}
+.stats span{font:700 .65rem var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+.arow{display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center;justify-content:space-between;padding:.9rem 0;border-top:1px solid var(--line)}
+.arow .info{min-width:0;flex:1 1 220px;display:grid;gap:.15rem}
+.arow .info b{overflow-wrap:anywhere}
+.arow .ops{display:flex;flex-wrap:wrap;gap:.4rem}
+.tools{display:flex;flex-wrap:wrap;gap:.7rem;align-items:end;margin-bottom:1rem}
+.tools .field{flex:1 1 200px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;min-width:560px;background:var(--paper)}
+th,td{padding:.7rem .8rem;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:700 .68rem var(--sans);letter-spacing:.12em;text-transform:uppercase;background:var(--cream-2)}
+.two{display:grid;gap:2rem}
+@media(min-width:900px){.two{grid-template-columns:1fr 1fr}}
+.tabsw{display:flex;gap:0;border:1.5px solid var(--brown);width:fit-content;max-width:100%;margin-bottom:1.2rem}
+.tabsw button{background:none;border:0;padding:.7rem 1.2rem;min-height:44px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:.75rem;cursor:pointer}
+.tabsw button[aria-pressed=true]{background:var(--brown);color:var(--cream)}
+
+@keyframes pulse{50%{opacity:.45}}
+@keyframes slidein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes shimmer{to{background-position:-200% 0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes stampin{from{opacity:0;transform:rotate(-5deg) scale(2)}to{opacity:1;transform:rotate(-5deg) scale(1)}}
+@keyframes bob{50%{transform:translate(-50%,-56%)}}
+@keyframes floaty{50%{transform:translateY(-8px) rotate(-.6deg)}}
+@keyframes ring{to{box-shadow:0 5px 8px -3px rgba(0,0,0,.5),0 0 0 22px rgba(204,85,0,0)}}
+@keyframes crack{0%{transform:translate(-50%,-50%) scale(1)}35%{transform:translate(-50%,-50%) scale(1.25) rotate(10deg)}100%{transform:translate(-50%,-10%) scale(.2) rotate(50deg);opacity:0}}
+@keyframes unfold{from{transform:perspective(900px) rotateX(-75deg) scaleY(.35);opacity:0}to{transform:none;opacity:1}}
+@keyframes inkin{from{opacity:0;transform:translateY(8px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+@keyframes cf{0%{opacity:1;transform:translate(0,0) rotate(0)}70%{opacity:1}100%{opacity:0;transform:translate(var(--dx),calc(var(--dy) + 260px)) rotate(var(--r))}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+<header class="top" id="top"></header>
+<main id="app" tabindex="-1"></main>
+<nav class="tabs" id="tabs" aria-label="Main"></nav>
+<div id="toasts" role="status" aria-live="polite"></div>
+<div id="modal-root"></div>
+<div id="offline" hidden role="alertdialog" aria-labelledby="off-t">
+  <h2 id="off-t">NO INTERNET CONNECTION</h2>
+  <p>It looks like you're offline.<br>Please check your internet connection and try again.</p>
+  <p id="off-test" class="small" hidden>Your test timer keeps running while you reconnect.</p>
+  <button class="btn" data-act="retryNet">Retry</button>
+</div>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-database-compat.js"></script>
+<script>
+// YOURTRACK Firebase connection
+const YOURTRACK_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCu_ebo8Zcsqf6KvsFDw-zhSt3mPw2Ekx0",
+  authDomain: "yourtrack-20380.firebaseapp.com",
+  databaseURL: "https://yourtrack-20380-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "yourtrack-20380",
+  storageBucket: "yourtrack-20380.firebasestorage.app",
+  messagingSenderId: "70313976219",
+  appId: "1:70313976219:web:20b296c6225bc7a155013e",
+  measurementId: "G-TK01G59FR1"
+};
+if (!firebase.apps.length) firebase.initializeApp(YOURTRACK_FIREBASE_CONFIG);
+window.ytAuth = firebase.auth();
+window.ytDatabase = firebase.database();
+</script>
+<script>
+(function(){
+'use strict';
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=p=>p+Math.random().toString(36).slice(2,8);
+const p2=n=>String(n).padStart(2,'0');
+const fmtT=s=>{s=Math.max(0,Math.round(s));return p2(Math.floor(s/60))+':'+p2(s%60)};
+const fmtD=t=>new Date(t).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
+const first=n=>String(n||'').split(' ')[0];
+const hashPw=s=>{let h=5381;for(const c of String(s))h=((h<<5)+h+c.charCodeAt(0))|0;return String(h)};
+const sorted=a=>a.slice().sort((x,y)=>x.order-y.order);
+const isOn=x=>x.status!=='off';
+const DAY=864e5;
+
+/* ---------- storage (localStorage, memory fallback) ---------- */
+const KEY='yourtrack.v1';
+function loadDB(){try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r)}catch(e){}return null}
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}
+  const user=window.ytAuth&&window.ytAuth.currentUser;
+  if(user&&window.ytDatabase){
+    const safe=JSON.parse(JSON.stringify(db));
+    safe.session=null;
+    safe.users=(safe.users||[]).map(({pw,...u})=>u);
+    window.ytDatabase.ref('yourtrack/appData').set(safe).catch(e=>console.error('Firebase save failed:',e));
+  }
+}
+
+/* ---------- seed data ---------- */
+function seed(){
+  const now=Date.now();
+  const d={users:[],subjects:[],lessons:[],topics:[],tests:[],questions:[],attempts:[],requests:[],messages:[],session:null,settings:{defaultPass:80},nextReq:105};
+  d.users.push(
+    {id:'u0',name:'Admin',email:'admin@yourtrack.app',pw:hashPw('admin123'),role:'admin',at:now-90*DAY},
+    {id:'u1',name:'Dharshini',email:'student@yourtrack.app',pw:hashPw('student123'),role:'user',at:now-40*DAY},
+    {id:'u2',name:'Arun Kumar',email:'arun@example.com',pw:hashPw('arun123'),role:'user',at:now-22*DAY},
+    {id:'u3',name:'Meera Subramanian',email:'meera@example.com',pw:hashPw('meera123'),role:'user',at:now-9*DAY});
+  const S=(id,name,description,icon,order)=>d.subjects.push({id,name,description,icon,order,status:'on'});
+  S('s1','Data Structures','Arrays, lists, stacks, queues and trees: how data is arranged and why it matters.','DS',1);
+  S('s2','Operating Systems','Processes, scheduling and memory: what runs your programs.','OS',2);
+  S('s3','Database Management Systems','Relational design, keys and normalization.','DB',3);
+  const L=(id,subjectId,name,description,order)=>d.lessons.push({id,subjectId,name,description,order,status:'on'});
+  L('l1','s1','Linear Structures','Stacks, queues and linked lists.',1);
+  L('l2','s1','Trees','Binary trees, search trees and self-balancing trees.',2);
+  L('l3','s2','Processes','States, scheduling and context switches.',1);
+  L('l4','s3','Relational Model','Keys, dependencies and normal forms.',1);
+  const T=(id,lessonId,name,description,order)=>d.topics.push({id,lessonId,name,description,order,status:'on'});
+  T('t1','l1','Stacks and Queues','LIFO, FIFO and where each is used.',1);
+  T('t2','l1','Linked Lists','Nodes, pointers and traversal.',2);
+  T('t3','l2','Binary Trees','Traversals, height and node counts.',1);
+  T('t4','l2','AVL Trees','Balance factors and rotations.',2);
+  T('t5','l3','Process States','New, ready, running, waiting, terminated.',1);
+  T('t6','l3','CPU Scheduling','FCFS, SJF, Round Robin and priority.',2);
+  T('t7','l4','Keys and Normalization','Candidate keys, 1NF to BCNF.',1);
+  const X=(id,topicId,title,mode,minutes,secPerQ,pass,letter)=>d.tests.push({id,topicId,title,mode,minutes,secPerQ,pass,status:'on',letter});
+  X('x1','t3','Binary Tree MCQ','total',8,30,80,{required:80,title:'You did it!',message:'Another topic completed.\nYour hard work is slowly becoming\nsomething you can be proud of.\nKeep going.',signature:'— YourTrack'});
+  X('x2','t4','AVL Tree MCQ','total',6,30,80,{required:80,title:'Balanced, like you.',message:'Every rotation you learned today\nkeeps the tree upright.\nThe next topic is waiting.',signature:'— YourTrack'});
+  X('x3','t1','Stacks and Queues MCQ','perq',0,30,70,{required:70,title:'One step closer.',message:'Push, pop, enqueue, repeat.\nYou are building a habit.',signature:'— YourTrack'});
+  X('x4','t6','CPU Scheduling MCQ','total',5,30,80,{required:80,title:'Well scheduled.',message:'Short jobs first,\nand you finished yours.',signature:'— YourTrack'});
+  X('x5','t7','Normalization MCQ','total',5,30,80,{required:80,title:'Clean and normalized.',message:'No redundancy in your effort.\nKeep going.',signature:'— YourTrack'});
+  const Q=(testId,q,o,c,exp,diff)=>d.questions.push({id:uid('q'),testId,q,o,c,exp,marks:1,diff:diff||'Medium',status:'on'});
+  Q('x1','What is the maximum number of nodes at level L of a binary tree (root at level 0)?',['2^L','2^(L+1)','L²','2L'],0,'Each level can hold twice as many nodes as the one above it, starting from 1 at the root.','Easy');
+  Q('x1','Which traversal of a binary search tree visits the keys in sorted order?',['Preorder','Postorder','Inorder','Level order'],2,'Inorder visits left subtree, node, then right subtree, which gives ascending order in a BST.','Easy');
+  Q('x1','A binary tree has n nodes. How many null child pointers does it have?',['n − 1','n','2n','n + 1'],3,'There are 2n child pointers in total and n − 1 of them point to real nodes, leaving n + 1 null pointers.');
+  Q('x1','A full binary tree has 15 nodes. How many of them are leaves?',['7','9','8','15'],2,'In a full binary tree, leaves = (n + 1) / 2 = 8.');
+  Q('x1','In which traversal does the root appear last?',['Preorder','Postorder','Inorder','Level order'],1,'Postorder visits left, right, then the root.','Easy');
+  Q('x1','Which data structure is normally used for level-order traversal?',['Stack','Heap','Hash table','Queue'],3,'A queue processes nodes in first-in, first-out order, which matches visiting level by level.','Easy');
+  Q('x1','What is the worst-case time to search a BST with n nodes?',['O(n)','O(log n)','O(1)','O(n log n)'],0,'A skewed tree behaves like a linked list, so a search may touch every node.');
+  Q('x1','What is the height (in edges) of a complete binary tree with n nodes?',['n / 2','⌊log₂ n⌋','n','⌈n / 2⌉'],1,'A complete tree fills each level before starting the next, so its height grows with log₂ n.','Hard');
+  Q('x2','Which balance factors are allowed in an AVL tree?',['Only 0','Any value up to 2','−1, 0 or 1','Only −1 and 1'],2,'AVL trees keep the height difference of the two subtrees of every node within 1.','Easy');
+  Q('x2','Which rotation fixes a left-left imbalance?',['Left rotation','Right rotation','Left-right rotation','Right-left rotation'],1,'When the extra height is in the left child of the left subtree, one right rotation restores balance.');
+  Q('x2','What is the worst-case height of an AVL tree with n nodes?',['O(n)','O(√n)','O(n log n)','O(log n)'],3,'The balance rule keeps the height logarithmic, so search, insert and delete are O(log n).','Easy');
+  Q('x2','How is a left-right imbalance fixed?',['A single right rotation','Left rotation on the left child, then right rotation on the node','A single left rotation','No rotation is needed'],1,'The double rotation first turns the case into left-left, then rotates right.','Hard');
+  Q('x2','After one insertion, how many rotations does an AVL tree need at most to rebalance?',['One single or double rotation','log n rotations','n rotations','Always two single rotations'],0,'Once the lowest unbalanced node is fixed, the heights above it return to normal.','Hard');
+  Q('x2','Compared with a Red-Black tree, which keeps the stricter balance?',['Red-Black tree','They are identical','Neither','AVL tree'],3,'AVL trees give faster lookups because they are more tightly balanced, at the cost of more rotations on updates.');
+  Q('x3','Which data structure follows FIFO?',['Stack','Queue','Tree','Graph'],1,'A queue removes the element that was inserted first.','Easy');
+  Q('x3','Which end of a stack does pop remove from?',['Bottom','Middle','Top','Either end'],2,'A stack is last in, first out, so pop takes the most recently pushed item.','Easy');
+  Q('x3','Which structure is used to evaluate a postfix expression?',['Queue','Stack','Heap','Binary tree'],1,'Operands are pushed, and each operator pops its operands and pushes the result.');
+  Q('x3','What problem does a circular queue solve?',['Stack overflow','Deadlock','Wasted space at the front of an array queue','Sorting'],2,'Wrapping the indices around lets freed slots at the front be reused.');
+  Q('x3','What is the cost of enqueue in a linked-list queue that keeps a tail pointer?',['O(n)','O(1)','O(log n)','O(n²)'],1,'The new node is linked after the tail and the tail pointer moves, with no traversal.');
+  Q('x3','Which structure is best for checking balanced parentheses?',['Queue','Tree','Graph','Stack'],3,'Each closing bracket must match the most recent unmatched opening bracket.','Easy');
+  Q('x4','Which of these is a non-preemptive scheduling algorithm?',['Round Robin','FCFS','SRTF','Preemptive priority'],1,'FCFS lets a process run until it finishes or blocks.','Easy');
+  Q('x4','The convoy effect is most associated with which algorithm?',['FCFS','Round Robin','MLFQ','Shortest remaining time first'],0,'Short processes queue behind one long CPU-bound process.');
+  Q('x4','Which non-preemptive algorithm gives the minimum average waiting time?',['FCFS','Round Robin','Shortest job first','Priority'],2,'Running the shortest jobs first minimises average waiting time.');
+  Q('x4','Round Robin with a very large time quantum behaves like:',['SJF','LIFO','Priority scheduling','FCFS'],3,'If the quantum exceeds every burst, no process is preempted, so the order is first come, first served.');
+  Q('x4','Which algorithm can cause starvation of low-priority processes?',['Priority scheduling','FCFS','Round Robin','None of these'],0,'A steady stream of higher priority processes can keep a low priority one waiting forever.','Easy');
+  Q('x5','First normal form (1NF) requires that:',['Every attribute value is atomic','There are no partial dependencies','There are no transitive dependencies','Every determinant is a key'],0,'1NF forbids repeating groups and multi-valued cells.','Easy');
+  Q('x5','Second normal form (2NF) removes:',['Transitive dependencies','Multivalued dependencies','Partial dependencies on part of a composite key','Join dependencies'],2,'In 2NF, every non-key attribute depends on the whole key.');
+  Q('x5','Third normal form (3NF) removes:',['Atomicity violations','Transitive dependencies of non-key attributes','Candidate keys','Foreign keys'],1,'In 3NF, non-key attributes depend only on the key, not on other non-key attributes.');
+  Q('x5','A relation is in BCNF when:',['It has no foreign keys','Every attribute is atomic','It has only one candidate key','The determinant of every dependency is a superkey'],3,'BCNF is a stricter form of 3NF: every determinant must be a superkey.','Hard');
+  Q('x5','A candidate key is:',['Any column in the table','A minimal set of attributes that uniquely identifies a row','A column that references another table','A set of all attributes'],1,'Candidate keys are minimal: removing any attribute stops them from identifying rows uniquely.','Easy');
+  const mk=(userId,testId,right,daysAgo,secs)=>{
+    const test=d.tests.find(t=>t.id===testId),qs=d.questions.filter(q=>q.testId===testId);
+    const ans={};qs.forEach((q,i)=>{if(i<right)ans[q.id]=q.c;else if(i<qs.length-0)ans[q.id]=(q.c+1)%4});
+    d.attempts.push(buildAttempt(d,userId,test,qs,ans,[qs[1]&&qs[1].id].filter(Boolean),secs,now-daysAgo*DAY));
+  };
+  mk('u1','x3',5,12,140);mk('u1','x1',5,6,330);mk('u1','x1',7,3,280);mk('u1','x2',4,1,260);
+  mk('u2','x1',8,5,300);mk('u2','x4',3,2,200);mk('u3','x5',4,1,180);
+  d.requests.push(
+    {id:101,userId:'u2',subject:'Operating Systems',topic:'Deadlocks',count:15,from:88,to:102,note:'Focus on the four necessary conditions.',status:'completed',resp:'Done. Your test is under Process States.',at:now-8*DAY},
+    {id:102,userId:'u3',subject:'Data Structures',topic:'Heaps',count:20,from:140,to:155,note:'',status:'pending',resp:'',at:now-2*DAY},
+    {id:103,userId:'u1',subject:'Database Management Systems',topic:'Transactions and ACID',count:10,from:60,to:72,note:'Definitions mostly.',status:'processing',resp:'Working on it.',at:now-5*DAY},
+    {id:104,userId:'u1',subject:'Data Structures',topic:'AVL Tree',count:20,from:45,to:60,note:'Please focus more on important definitions and frequently asked concepts.',status:'review',resp:'',at:now-1*DAY});
+  d.countdown={title:'Exam starts in',target:now+23*DAY+4*36e5+17*6e4,enabled:true};
+  d.messages.push({id:'m1',message:'Keep going. Every question takes you one step closer.',status:'on',at:now-3*DAY,updated:now-3*DAY});
+  return d;
+}
+function buildAttempt(d,userId,test,qs,ans,marked,secs,at){
+  const g=grade(qs,ans);
+  const topic=d.topics.find(t=>t.id===test.topicId)||{},lesson=d.lessons.find(l=>l.id===topic.lessonId)||{},subj=d.subjects.find(s=>s.id===lesson.subjectId)||{};
+  return Object.assign({id:uid('a'),userId,testId:test.id,answers:ans,marked,time:secs,at,passed:g.pct>=test.pass,pass:test.pass,
+    meta:{title:test.title,subject:subj.name||'',lesson:lesson.name||'',topic:topic.name||''},
+    snap:qs.map(q=>({id:q.id,q:q.q,o:q.o,c:q.c,exp:q.exp,marks:q.marks})),letter:test.letter?Object.assign({},test.letter):null,markedCount:marked.length},g);
+}
+function grade(qs,ans){
+  let score=0,total=0,correct=0,wrong=0,answered=0;
+  qs.forEach(q=>{total+=q.marks;const a=ans[q.id];if(a!==undefined){answered++;if(a===q.c){score+=q.marks;correct++}else wrong++}});
+  const pct=total?Math.round(score/total*10000)/100:0;
+  return{score,total,correct,wrong,answered,unanswered:qs.length-answered,count:qs.length,pct};
+}
+
+/* ---------- clean database for Firebase-backed use ---------- */
+function emptyDB(){return {users:[],subjects:[],lessons:[],topics:[],tests:[],questions:[],attempts:[],requests:[],messages:[],session:null,settings:{defaultPass:80},nextReq:1};}
+// Firebase may return missing/empty collections as null or objects rather than arrays.
+function normalizeDB(raw){
+  const out=Object.assign(emptyDB(),raw&&typeof raw==='object'?raw:{});
+  ['users','subjects','lessons','topics','tests','questions','attempts','requests','messages'].forEach(key=>{
+    const value=out[key];
+    out[key]=Array.isArray(value)?value:(value&&typeof value==='object'?Object.values(value):[]);
+  });
+  out.settings=Object.assign({defaultPass:80},out.settings&&typeof out.settings==='object'?out.settings:{});
+  if(!Number.isFinite(Number(out.nextReq)))out.nextReq=1;
+  return out;
+}
+
+/* ---------- state ---------- */
+let db=normalizeDB(loadDB());
+let route='home',T=null,fresh=null,pending=null,navTimer=null;
+const ui={histTab:'tests',q:'',fStatus:'',fParent:'',openLesson:{},reviewOpen:false};
+const me=()=>db.users.find(u=>u.id===db.session)||null;
+const isAdmin=()=>{const u=me();return !!u&&u.role==='admin'};
+const sub=id=>db.subjects.find(x=>x.id===id),les=id=>db.lessons.find(x=>x.id===id),top=id=>db.topics.find(x=>x.id===id),tst=id=>db.tests.find(x=>x.id===id);
+const userName=id=>(db.users.find(u=>u.id===id)||{name:'Unknown'}).name;
+const topicPath=tid=>{const t=top(tid),l=t&&les(t.lessonId),s=l&&sub(l.subjectId);return[s&&s.name,l&&l.name,t&&t.name].filter(Boolean).join(' › ')};
+const qsOf=testId=>db.questions.filter(q=>q.testId===testId&&isOn(q));
+const bestPct=(uid_,tid)=>{const a=db.attempts.filter(x=>x.userId===uid_&&x.testId===tid);return a.length?Math.max(...a.map(x=>x.pct)):null};
+const testsOfTopic=id=>db.tests.filter(t=>t.topicId===id&&isOn(t));
+function topicProg(u,tid){const ts=testsOfTopic(tid);return ts.length?avg(ts.map(t=>bestPct(u,t.id)||0)):null}
+function lessonTopics(lid){return sorted(db.topics.filter(t=>t.lessonId===lid&&isOn(t)))}
+function lessonProg(u,lid){const p=lessonTopics(lid).map(t=>topicProg(u,t.id)).filter(x=>x!==null);return p.length?avg(p):null}
+function subjectProg(u,sid){const p=db.lessons.filter(l=>l.subjectId===sid&&isOn(l)).map(l=>lessonProg(u,l.id)).filter(x=>x!==null);return p.length?avg(p):null}
+function overallProg(u){const p=db.subjects.filter(isOn).map(s=>subjectProg(u,s.id)).filter(x=>x!==null);return p.length?avg(p):0}
+
+/* ---------- ui primitives ---------- */
+const IC={
+  home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  book:'<path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/>',
+  chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  more:'<path d="M4 7h16M4 12h16M4 17h16"/>'};
+const ico=n=>`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" aria-hidden="true">${IC[n]}</svg>`;
+function toast(msg,type,title){const t=document.createElement('div');t.className='toast '+(type||'');t.innerHTML=(title?`<b>${esc(title)}</b>`:'')+esc(msg);$('#toasts').appendChild(t);setTimeout(()=>t.remove(),3800)}
+function bar(p,thin){return`<div class="bar${thin?' thin':''}" role="progressbar" aria-valuenow="${Math.round(p)}" aria-valuemin="0" aria-valuemax="100"><i data-w="${Math.round(p)}"></i></div>`}
+function animateBars(){requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.bar>i[data-w]').forEach(i=>{i.style.width=i.dataset.w+'%'})))}
+function skeleton(){return`<div class="wrap" aria-busy="true" aria-label="Loading"><div class="sk" style="height:18px;width:30%;margin-block:1rem"></div><div class="sk" style="height:56px;width:70%;margin-bottom:1.5rem"></div><div class="grid"><div class="sk" style="height:170px"></div><div class="sk" style="height:170px"></div><div class="sk" style="height:170px"></div></div></div>`}
+function empty(t,b,btn){return`<div class="empty"><h3>${esc(t)}</h3><p class="muted">${esc(b)}</p>${btn||''}</div>`}
+function openModal(html){const r=$('#modal-root');r.innerHTML=`<div class="modal" data-modal><div class="dialog" role="dialog" aria-modal="true">${html}</div></div>`;const f=r.querySelector('input:not([type=hidden]),textarea,select,button');if(f)setTimeout(()=>f.focus(),30)}
+function closeModal(){$('#modal-root').innerHTML='';pending=null}
+function ask(title,body,label,fn,danger){pending=fn;openModal(`<h2>${esc(title)}</h2><p>${body}</p><div class="btns"><button class="btn" data-act="closeModal">Cancel</button><button class="btn ${danger?'danger':'pri'}" data-act="confirmYes">${esc(label)}</button></div>`)}
+function busy(btn,label,ms,fn){if(btn.disabled)return;const old=btn.textContent;btn.disabled=true;btn.textContent=label;setTimeout(()=>{btn.disabled=false;btn.textContent=old;fn()},ms)}
+function firebaseMessage(e){const messages={'auth/email-already-in-use':'This email already has an account. Log in instead.','auth/invalid-email':'Enter a valid email address.','auth/weak-password':'Use a stronger password (at least 6 characters).','auth/user-not-found':'No account was found for this email.','auth/wrong-password':'Incorrect email or password.','auth/invalid-credential':'Incorrect email or password.','auth/network-request-failed':'Network error. Check your internet connection.','PERMISSION_DENIED':'Firebase database permission denied. Check your Realtime Database rules.'};return messages[e&&e.code]||((e&&e.message)||'Something went wrong. Please try again.')}
+function formErr(f,m){const e=f.querySelector('.form-err');if(e)e.textContent=m;else toast(m,'err')}
+const fd=f=>Object.fromEntries(new FormData(f));
+const parseRoute=()=>{const i=route.indexOf(':');return i<0?[route,'']:[route.slice(0,i),route.slice(i+1)]};
+
+/* ================= VIEWS: auth ================= */
+function authView(mode){
+  const titles={login:['Welcome back.','Log in to pick up where you left off.'],register:['Start your journal.','Create an account to track every topic you finish.'],forgot:['Reset password.','Enter your email and a new password.'],adminreg:['Create admin account.','Set up an administrator who can manage subjects, tests, users and requests.']};
+  const t=titles[mode];
+  let form='';
+  if(mode==='login')form=`<form class="form" data-form="login" novalidate>
+    <div class="field"><label for="email">Email</label><input class="inp" id="email" name="email" type="email" autocomplete="email" required></div>
+    <div class="field"><label for="password">Password</label><input class="inp" id="password" name="password" type="password" autocomplete="current-password" required></div>
+    <p class="form-err" role="alert"></p>
+    <button class="btn pri block" type="submit">Log in</button>
+    <p class="small"><button type="button" class="link" data-go="forgot">Forgot password?</button> &nbsp; <button type="button" class="link" data-go="register">Create account</button></p></form>
+    <p class="hint">Your account is securely managed by Firebase Authentication.</p>
+    <button type="button" class="btn block" data-go="adminreg">Create admin account</button>`;
+  if(mode==='register')form=`<form class="form" data-form="register" novalidate>
+    <div class="field"><label for="name">Full name</label><input class="inp" id="name" name="name" autocomplete="name" required maxlength="60"></div>
+    <div class="field"><label for="email">Email</label><input class="inp" id="email" name="email" type="email" autocomplete="email" required></div>
+    <div class="field"><label for="password">Password</label><input class="inp" id="password" name="password" type="password" autocomplete="new-password" minlength="6" required><span class="hint">At least 6 characters.</span></div>
+    <div class="field"><label for="password2">Confirm password</label><input class="inp" id="password2" name="password2" type="password" autocomplete="new-password" required></div>
+    <p class="form-err" role="alert"></p>
+    <button class="btn pri block" type="submit">Create account</button>
+    <p class="small">Already have an account? <button type="button" class="link" data-go="login">Log in</button></p></form>`;
+  if(mode==='adminreg')form=`<form class="form" data-form="adminreg" novalidate>
+    <div class="field"><label for="name">Full name</label><input class="inp" id="name" name="name" autocomplete="name" required maxlength="60"></div>
+    <div class="field"><label for="email">Email</label><input class="inp" id="email" name="email" type="email" autocomplete="email" required></div>
+    <div class="field"><label for="password">Password</label><input class="inp" id="password" name="password" type="password" autocomplete="new-password" minlength="6" required><span class="hint">At least 6 characters.</span></div>
+    <div class="field"><label for="password2">Confirm password</label><input class="inp" id="password2" name="password2" type="password" autocomplete="new-password" required></div>
+    <p class="form-err" role="alert"></p>
+    <button class="btn pri block" type="submit">Create admin account</button>
+    <p class="small"><button type="button" class="link" data-go="login">Back to log in</button></p></form>`;
+  if(mode==='forgot')form=`<form class="form" data-form="forgot" novalidate>
+    <div class="field"><label for="email">Email</label><input class="inp" id="email" name="email" type="email" autocomplete="email" required></div>
+    <p class="hint">We will email you a secure password-reset link.</p>
+    <p class="form-err" role="alert"></p>
+    <button class="btn pri block" type="submit">Send reset link</button>
+    <p class="small"><button type="button" class="link" data-go="login">Back to log in</button></p></form>`;
+  return`<div class="auth-grid"><aside class="auth-side on-dark"><div class="logo">YOUR<i>TRACK</i></div><div><div class="big">A study tracker that feels <em>personal.</em></div></div><p>Subjects, lessons, topics and MCQs, with every result kept in your own journal.</p></aside>
+  <section class="auth-main"><div class="auth-box"><div><p class="eyebrow">${mode==='login'?'Log in':mode==='register'?'Sign up':mode==='adminreg'?'Administrator':'Forgot password'}</p><h1>${t[0]}</h1><p class="muted">${t[1]}</p></div>${form}</div></section></div>`;
+}
+
+/* ================= VIEWS: home ================= */
+function cdParts(){const c=db.countdown;if(!c||!c.enabled)return null;const diff=c.target-Date.now();if(diff<=0)return{done:true};const s=Math.floor(diff/1000);return{d:Math.floor(s/86400),h:Math.floor(s%86400/3600),m:Math.floor(s%3600/60),s:s%60}}
+function cdInner(){
+  const c=db.countdown,p=cdParts();if(!p)return'';
+  if(p.done)return`<p class="cd-title">${esc(c.title)}</p><div class="cd-done">THE DAY HAS ARRIVED</div>`;
+  return`<p class="cd-title">${esc(c.title)}</p><div class="cd-grid" role="timer" aria-label="Countdown"><div class="cd-cell"><b id="cd-d">${p.d}</b><span>Days</span></div><div class="cd-cell"><b id="cd-h">${p2(p.h)}</b><span>Hours</span></div><div class="cd-cell"><b id="cd-m">${p2(p.m)}</b><span>Minutes</span></div><div class="cd-cell"><b id="cd-s">${p2(p.s)}</b><span>Seconds</span></div></div>`;
+}
+let cdState='';
+function tickCountdown(){
+  const box=$('#cd');if(!box)return;const p=cdParts();const st=!p?'off':p.done?'done':'run';
+  if(st!==cdState){cdState=st;box.innerHTML=cdInner();return}
+  if(st==='run'){const set=(id,v)=>{const e=$(id);if(e&&e.textContent!==String(v))e.textContent=v};set('#cd-d',p.d);set('#cd-h',p2(p.h));set('#cd-m',p2(p.m));set('#cd-s',p2(p.s))}
+}
+function homeView(){
+  const u=me(),hr=new Date().getHours(),g=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+  const msg=db.messages.filter(m=>m.status==='on').sort((a,b)=>b.updated-a.updated)[0];
+  const subs=sorted(db.subjects.filter(isOn));
+  const ov=overallProg(u.id);
+  const last=db.attempts.filter(a=>a.userId===u.id).sort((a,b)=>b.at-a.at)[0];
+  let next=null;
+  outer:for(const s of subs)for(const l of sorted(db.lessons.filter(x=>x.subjectId===s.id&&isOn(x))))for(const t of lessonTopics(l.id))for(const x of testsOfTopic(t.id)){if(!db.attempts.some(a=>a.userId===u.id&&a.testId===x.id&&a.passed)){next=x;break outer}}
+  const p=cdParts();cdState=!p?'off':p.done?'done':'run';
+  return`<div class="wrap">
+  <div class="dateline"><span>${new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</span><span>Your study journal</span></div>
+  <h1 class="greet">${g}, <em>${esc(first(u.name))}.</em></h1>
+  <section class="front">
+    <div id="cd" class="cd">${cdInner()||`<p class="cd-title">No countdown is set.</p><p class="muted">${isAdmin()?'Add one in Admin › Countdown.':'Your admin has not set an important date yet.'}</p>`}</div>
+    <aside class="noteWrap" aria-label="Pinned message">${msg?`<div class="note">${esc(msg.message)}<small>Pinned note</small></div>`:`<div class="note">Nothing pinned today.<small>Pinned note</small></div>`}</aside>
+  </section>
+  <section class="strip" aria-label="Overall progress"><div class="pcrow"><div><p class="eyebrow">Overall progress</p></div><b class="big tnum">${Math.round(ov)}%</b>${bar(ov)}</div>
+    <div>${next?`<button class="btn pri block" data-go="test:${next.id}">${last?'Continue':'Start'}: ${esc(next.title)}</button>`:`<button class="btn block" data-go="subjects">Browse subjects</button>`}</div></section>
+  <div class="sec-h"><h2>Subjects</h2><button class="link" data-go="subjects">See all</button></div>
+  ${subs.length?`<div class="grid">${subs.slice(0,6).map(s=>subjectCard(s,u)).join('')}</div>`:empty('NO SUBJECTS YET','Your subjects will appear here once they are added.')}
+  </div>`;
+}
+function subjectCard(s,u){
+  const p=subjectProg(u.id,s.id),lc=db.lessons.filter(l=>l.subjectId===s.id&&isOn(l)).length;
+  return`<button class="card subj" data-go="subject:${s.id}"><span class="ic">${esc(s.icon||s.name.slice(0,2))}</span><h3>${esc(s.name)}</h3><p>${esc(s.description)}</p><div class="pcrow"><span class="small muted">${lc} lesson${lc===1?'':'s'}</span><b class="tnum">${p===null?'—':Math.round(p)+'%'}</b>${bar(p||0,1)}</div></button>`;
+}
+
+/* ================= VIEWS: subjects / lessons / topics ================= */
+function subjectsView(){
+  const u=me(),subs=sorted(db.subjects.filter(isOn));
+  return`<div class="wrap"><div class="page-h"><p class="eyebrow">Library</p><h1>Subjects</h1><p>Pick a subject, then a lesson, then a topic. Every topic ends in an MCQ test.</p></div>
+  ${subs.length?`<div class="grid">${subs.map(s=>subjectCard(s,u)).join('')}</div>`:empty('NO SUBJECTS YET','Your subjects will appear here once they are added.')}</div>`;
+}
+function subjectView(id){
+  const s=sub(id),u=me();if(!s||!isOn(s))return notFound();
+  const ls=sorted(db.lessons.filter(l=>l.subjectId===id&&isOn(l)));
+  const p=subjectProg(u.id,id);
+  return`<div class="wrap"><div class="crumbs"><button data-go="subjects">Subjects</button> / <span>${esc(s.name)}</span></div>
+  <div class="page-h"><p class="eyebrow">Subject</p><h1>${esc(s.name)}</h1><p>${esc(s.description)}</p><div class="pcrow" style="max-width:420px"><span class="small muted">Subject progress</span><b class="tnum">${p===null?'—':Math.round(p)+'%'}</b>${bar(p||0)}</div></div>
+  ${ls.length?ls.map((l,i)=>{const ts=lessonTopics(l.id),lp=lessonProg(u.id,l.id);return`<section class="lesson"><div class="lesson-h"><p class="eyebrow">Lesson ${i+1}</p><h3>${esc(l.name)}</h3><p class="muted">${esc(l.description)}</p></div>
+    ${ts.length?`<div class="rows">${ts.map(t=>{const tp=topicProg(u.id,t.id);return`<button class="row-btn" data-go="topic:${t.id}"><span class="t">${esc(t.name)}</span><span class="m">${tp===null?'<span class="chip mu">No test</span>':`<span class="tnum small">${Math.round(tp)}%</span>`}<span aria-hidden="true">→</span></span></button>`}).join('')}</div>`:empty('NO TOPICS YET','Topics for this lesson will appear here.')}
+    ${lp!==null?`<div class="pcrow"><span class="small muted">Lesson progress</span><b class="tnum">${Math.round(lp)}%</b>${bar(lp,1)}</div>`:''}</section>`}).join(''):empty('NO LESSONS YET','Lessons will appear here once they are added.')}</div>`;
+}
+function topicView(id){
+  const t=top(id),u=me();if(!t||!isOn(t))return notFound();
+  const l=les(t.lessonId),s=sub(l.subjectId),ts=testsOfTopic(id);
+  return`<div class="wrap"><div class="crumbs"><button data-go="subjects">Subjects</button> / <button data-go="subject:${s.id}">${esc(s.name)}</button> / <span>${esc(l.name)}</span></div>
+  <div class="page-h"><p class="eyebrow">Topic</p><h1>${esc(t.name)}</h1><p>${esc(t.description)}</p></div>
+  ${ts.length?`<div class="grid">${ts.map(x=>{const n=qsOf(x.id).length,b=bestPct(u.id,x.id);return`<article class="card test-card"><div><h3>${esc(x.title)}</h3></div><div class="meta"><span>${n} question${n===1?'':'s'}</span><span>${x.mode==='total'?x.minutes+' min total':x.secPerQ+' sec each'}</span><span>Pass at ${x.pass}%</span></div><div>${b===null?'<span class="chip mu">Not attempted</span>':`<span class="chip ${b>=x.pass?'ok':'or'}">Best ${Math.round(b)}%</span>`}</div><button class="btn pri" data-go="test:${x.id}" ${n?'':'disabled'}>${b===null?'Start test':'Try again'}</button></article>`}).join('')}</div>`:empty('NO TESTS YET','Tests for this topic will appear here once they are published.')}</div>`;
+}
+function notFound(){return`<div class="wrap">${empty('NOT FOUND','This page is no longer available.',`<button class="btn" data-go="home">Go home</button>`)}</div>`}
+
+/* ================= VIEWS: test intro / take ================= */
+function testIntro(id){
+  const x=tst(id),u=me();if(!x||!isOn(x))return notFound();
+  const n=qsOf(id).length,b=bestPct(u.id,id),t=top(x.topicId);
+  return`<div class="wrap"><div class="crumbs"><button data-go="topic:${x.topicId}">← ${esc(t?t.name:'Back')}</button></div>
+  <div class="page-h"><p class="eyebrow">${esc(topicPath(x.topicId))}</p><h1>${esc(x.title)}</h1></div>
+  <div class="two"><div><dl class="dl" style="grid-template-columns:1fr"><div><dt>Questions</dt><dd>${n}</dd></div><div><dt>Timer</dt><dd>${x.mode==='total'?x.minutes+' minutes in total':x.secPerQ+' seconds per question'}</dd></div><div><dt>Passing score</dt><dd>${x.pass}%</dd></div><div><dt>Your best</dt><dd>${b===null?'Not attempted':Math.round(b)+'%'}</dd></div></dl></div>
+  <div class="card"><h3 style="margin-bottom:.6rem">Before you begin</h3><ul class="muted" style="margin:0;padding-left:1.2rem;display:grid;gap:.4rem"><li>The test submits itself when the timer reaches zero.</li><li>${x.mode==='total'?'You can move between questions freely, skip and come back.':'Each question has its own timer and you can only move forward.'}</li><li>Mark questions you want to review before submitting.</li><li>Score ${x.pass}% or more to open your letter.</li></ul>
+  <button class="btn pri block" style="margin-top:1.2rem" data-act="startTest" data-id="${x.id}" ${n?'':'disabled'}>Begin test</button></div></div></div>`;
+}
+function counts(){
+  const a=T.qs.filter(q=>T.ans[q.id]!==undefined).length,m=T.qs.filter(q=>T.marked[q.id]).length;
+  return{a,m,u:T.qs.length-a,t:T.qs.length};
+}
+function remaining(){return T.test.mode==='total'?(T.endAt-Date.now())/1000:(T.qEnd-Date.now())/1000}
+function takeView(){
+  const t=T,q=t.qs[t.i],c=counts(),perq=t.test.mode==='perq',rem=remaining();
+  const sel=t.ans[q.id],L='ABCD';
+  return`<header class="take-bar on-dark"><div class="wrap bar-in"><div style="min-width:0"><button class="exit" data-act="exitTest">← Exit</button><span class="trail">${esc(topicPath(t.test.topicId))}</span></div>
+  <div class="timer${rem<(perq?8:60)?' warn':''}" id="timer"><small>${perq?'TIME FOR THIS QUESTION':'TIME LEFT'}</small><b id="tm">${fmtT(rem)}</b></div></div></header>
+  <div class="wrap take-grid">
+  <section class="qcol" aria-label="Question"><div class="qwrap" key="${t.i}"><p class="eyebrow">Question ${t.i+1} / ${t.qs.length}${q.diff?' · '+esc(q.diff):''}</p>
+    <h2 class="q-h" id="qtext">${esc(q.q)}</h2>
+    <div class="opts" role="radiogroup" aria-labelledby="qtext">${q.o.map((o,k)=>`<label class="opt${sel===k?' sel':''}"><input type="radio" id="opt${k}" name="opt" value="${k}" data-act="pick" ${sel===k?'checked':''}><span class="ltr">${L[k]}</span><span>${esc(o)}</span></label>`).join('')}</div>
+    ${sel!==undefined?`<button class="link" data-act="clearAns">Clear answer</button>`:''}</div>
+    <div class="actions"><button class="btn" data-act="prevQ" ${t.i===0||perq?'disabled':''}>← Previous</button><button class="btn ${t.marked[q.id]?'mark-on':''}" data-act="markQ" aria-pressed="${!!t.marked[q.id]}">${t.marked[q.id]?'Marked':'Mark'}</button>${t.i===t.qs.length-1?`<button class="btn pri" data-act="askSubmit">Submit</button>`:`<button class="btn dark" data-act="nextQ">${sel===undefined?'Skip →':'Next →'}</button>`}</div></section>
+  <aside class="take-aside card" aria-label="Question status"><p class="eyebrow">Question status</p>
+    <div class="counts"><div><span>Answered</span><b>${c.a}</b></div><div><span>Marked</span><b>${c.m}</b></div><div><span>Not answered</span><b>${c.u}</b></div><div><span>Total</span><b>${c.t}</b></div></div>
+    <div class="navg">${t.qs.map((x,k)=>`<button data-act="gotoQ" data-i="${k}" aria-label="Question ${k+1}${t.ans[x.id]!==undefined?', answered':''}${t.marked[x.id]?', marked':''}" class="${t.ans[x.id]!==undefined?'a ':''}${t.marked[x.id]?'m ':''}${k===t.i?'cur':''}" ${perq&&k<=t.i&&k!==t.i?'disabled':''} ${perq&&k>t.i?'disabled':''}>${k+1}</button>`).join('')}</div>
+    <div class="legend"><span class="a"><i></i>Answered</span><span class="m"><i></i>Marked</span><span><i></i>Not answered</span></div>
+    <button class="btn pri block" style="margin-top:1rem" data-act="askSubmit">Submit test</button></aside></div>`;
+}
+function resultView(id){
+  const a=db.attempts.find(x=>x.id===id),u=me();
+  if(!a||(a.userId!==u.id&&!isAdmin()))return notFound();
+  const f=fresh===id;
+  const letter=a.letter&&a.letter.message&&a.pct>=a.letter.required;
+  const owner=a.userId===u.id?u:db.users.find(x=>x.id===a.userId);
+  const tests=tst(a.testId);
+  const row=(l,v)=>`<div><dt>${l}</dt><dd>${v}</dd></div>`;
+  const revHtml=a.snap.map((q,i)=>{const ua=a.answers[q.id],ok=ua===q.c;return`<article><p class="eyebrow">Question ${i+1} · ${ua===undefined?'<span class="a-bad">Not answered</span>':ok?'<span class="a-ok">Correct</span>':'<span class="a-bad">Wrong</span>'}${a.marked.includes(q.id)?' · Marked':''}</p><h3 style="font-size:1.2rem;font-family:var(--sans);font-weight:700">${esc(q.q)}</h3><ol type="A">${q.o.map((o,k)=>`<li class="${k===q.c?'cor':k===ua?'wr':''}">${esc(o)}${k===q.c?' ✓':''}${k===ua&&!ok?' (your answer)':''}</li>`).join('')}</ol>${q.exp?`<p class="exp"><b>Why:</b> ${esc(q.exp)}</p>`:''}</article>`}).join('');
+  return`<div class="wrap"><div class="crumbs"><button data-go="${f?'home':'history'}">← ${f?'Home':'History'}</button></div>
+  ${f?`<div class="banner" style="margin-top:1rem"><svg class="checkdraw" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"><circle cx="22" cy="22" r="19"/><path d="M13 23l7 7 12-14"/></svg><div>TEST COMPLETED<span>Your result has been saved.</span></div></div>`:''}
+  <p class="eyebrow" style="margin-top:1rem">${esc(a.meta.subject)} › ${esc(a.meta.topic)} · ${esc(a.meta.title)}</p>
+  <section class="res-head" style="margin-top:.6rem"><div><p class="eyebrow">${a.userId!==u.id?esc(owner.name)+"'s result":'Your result'}</p><div class="res-score tnum">${a.score} <small>/ ${a.total}</small></div><div class="res-pct tnum">${Math.round(a.pct)}%</div>${a.passed?'':`<p class="muted" style="margin-top:.5rem">Passing score: ${a.pass}%. Keep practicing and try again.</p>`}</div><div><span class="stamp ${a.passed?'ok':'no'}">${a.passed?'PASSED':'NOT YET'}</span></div></section>
+  <dl class="dl" style="margin-top:1.2rem">${row('Total questions',a.count)}${row('Answered',a.answered)}${row('Not answered',a.unanswered)}${row('Correct',a.correct)}${row('Wrong',a.wrong)}${row('Marked',a.markedCount)}${row('Total marks',a.total)}${row('Obtained marks',a.score)}${row('Percentage',Math.round(a.pct)+'%')}${row('Time taken',fmtT(a.time))}${row('Date',fmtD(a.at))}${row('Status',a.passed?'PASSED':'FAILED')}</dl>
+  ${letter?`<section class="env-zone" id="envzone" aria-label="Your letter"><p class="eyebrow" id="env-hint">A letter is waiting for you</p>
+    <div class="env-wrap" id="envwrap"><div class="env-float"><div class="env" id="env"><div class="back"></div><div class="paper"><span></span><span></span><span></span></div><div class="pocket"></div><div class="flap"></div><div class="outline"></div><button class="seal" data-act="openLetter" aria-label="Open letter">OPEN</button></div></div><p class="tap muted small" id="tap">Tap the seal to open</p></div>
+    <div class="letter-full" id="letter"><div class="letter-in"><div class="letter"><p class="ln" style="--i:0">Dear ${esc(first(owner.name))},</p><h3 class="ln" style="--i:1">${esc(a.letter.title)}</h3>${String(a.letter.message).split('\n').map((l,i)=>`<p class="ln" style="--i:${i+2}">${l.trim()?esc(l):'&nbsp;'}</p>`).join('')}<span class="sig ln" style="--i:${String(a.letter.message).split('\n').length+2}">${esc(a.letter.signature)}</span></div></div></div></section>`:''}
+  <div style="display:flex;flex-wrap:wrap;gap:.7rem;margin-block:1.5rem">
+   <button class="btn dark" data-act="toggleReview">${ui.reviewOpen?'Hide review':'Review result'}</button>
+   ${tests&&a.userId===u.id?`<button class="btn pri" data-go="test:${a.testId}">Try again</button>`:''}
+   ${tests?`<button class="btn" data-go="topic:${tests.topicId}">Back to topic</button>`:''}</div>
+  ${ui.reviewOpen?`<h2 style="margin-block:1rem">Review</h2><div class="rev">${revHtml}</div>`:''}</div>`;
+}
+
+/* ================= VIEWS: progress / history / request / profile / more ================= */
+function progressView(){
+  const u=me(),subs=sorted(db.subjects.filter(isOn)),ov=overallProg(u.id);
+  return`<div class="wrap"><div class="page-h"><p class="eyebrow">Progress</p><h1>How far you have come</h1><p>Progress is the average of your best score on each test in a topic, lesson and subject.</p></div>
+  <section class="strip"><div class="pcrow"><p class="eyebrow">Overall progress</p><b class="big tnum">${Math.round(ov)}%</b>${bar(ov)}</div><div></div></section>
+  ${subs.length?subs.map(s=>{const sp=subjectProg(u.id,s.id);return`<section style="margin-top:2rem"><div class="pcrow"><h2 style="font-size:1.6rem">${esc(s.name)}</h2><b class="tnum">${sp===null?'—':Math.round(sp)+'%'}</b>${bar(sp||0)}</div>
+   <div class="rows" style="margin-top:.6rem">${db.lessons.filter(l=>l.subjectId===s.id&&isOn(l)).map(l=>lessonTopics(l.id).map(t=>{const tp=topicProg(u.id,t.id);return`<div class="row-btn" style="cursor:default;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.2rem .8rem"><span class="t">${esc(t.name)}<span class="small muted" style="font-weight:400"> · ${esc(l.name)}</span></span><b class="tnum">${tp===null?'—':Math.round(tp)+'%'}</b>${tp===null?'':bar(tp,1).replace('class="bar','style="grid-column:1/-1" class="bar')}</div>`}).join('')).join('')}</div></section>`}).join(''):empty('NO SUBJECTS YET','Your subjects will appear here once they are added.')}</div>`;
+}
+function reqCard(r,admin){
+  const st={pending:['Pending','mu'],review:['Under review','or'],processing:['Processing','or'],completed:['Completed','ok'],rejected:['Rejected','bad']}[r.status];
+  return`<article class="card" style="display:grid;gap:.6rem"><div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap"><p class="eyebrow">MCQ request #${r.id}</p><span class="chip ${st[1]}">${st[0]}</span></div>
+  <h3 style="font-size:1.3rem">${esc(r.topic)}</h3><div class="meta"><span>${esc(r.subject)}</span><span>${r.count} questions</span><span>Pages ${r.from}–${r.to}</span><span>${fmtD(r.at)}</span>${admin?`<span>${esc(userName(r.userId))}</span>`:''}</div>
+  ${r.note?`<p class="small">“${esc(r.note)}”</p>`:''}${r.resp?`<p class="exp"><b>Admin:</b> ${esc(r.resp)}</p>`:''}${admin?`<div><button class="btn sm pri" data-act="reqAddMcq" data-id="${r.id}">+ Add MCQ</button> <button class="btn sm" data-act="manageReq" data-id="${r.id}">Manage</button></div>`:''}</article>`;
+}
+function historyView(){
+  const u=me(),at=db.attempts.filter(a=>a.userId===u.id).sort((a,b)=>b.at-a.at),rq=db.requests.filter(r=>r.userId===u.id).sort((a,b)=>b.at-a.at);
+  const tab=ui.histTab;
+  return`<div class="wrap"><div class="page-h"><p class="eyebrow">History</p><h1>Every attempt, kept</h1></div>
+  <div class="tabsw" role="group" aria-label="History type"><button data-act="histTab" data-t="tests" aria-pressed="${tab==='tests'}">Tests</button><button data-act="histTab" data-t="reqs" aria-pressed="${tab==='reqs'}">Requests</button></div>
+  ${tab==='tests'?(at.length?`<div class="rows">${at.map(a=>`<button class="row-btn" data-go="result:${a.id}"><span class="t">${esc(a.meta.title)}<span class="small muted" style="display:block;font-weight:400">${esc(a.meta.subject)} · ${a.count} questions · ${fmtT(a.time)} · ${fmtD(a.at)}</span></span><span class="m"><b class="tnum">${a.score}/${a.total}</b><span class="tnum small">${Math.round(a.pct)}%</span><span class="chip ${a.passed?'ok':'or'}">${a.passed?'Passed':'Not yet'}</span></span></button>`).join('')}</div>`:empty('NO TEST HISTORY','Complete your first MCQ test to see your progress here.',`<button class="btn pri" data-go="subjects">Browse subjects</button>`))
+  :(rq.length?`<div class="grid">${rq.map(r=>reqCard(r)).join('')}</div>`:empty('NO REQUESTS','Your MCQ requests will appear here.',`<button class="btn pri" data-go="request">Request MCQs</button>`))}</div>`;
+}
+function requestView(){
+  const u=me(),rq=db.requests.filter(r=>r.userId===u.id).sort((a,b)=>b.at-a.at),subs=sorted(db.subjects.filter(isOn));
+  return`<div class="wrap"><div class="page-h"><p class="eyebrow">Request MCQs</p><h1>Need questions from your own notes?</h1><p>Tell the admin which pages of your PDF to cover. Requests show up in History with their status.</p></div>
+  <div class="two"><form class="form card" data-form="request" novalidate>
+   <div class="field"><label for="r-subject">Subject</label><select class="inp" id="r-subject" name="subject" required><option value="">Select subject</option>${subs.map(s=>`<option>${esc(s.name)}</option>`).join('')}<option>Other</option></select></div>
+   <div class="field"><label for="r-topic">Topic</label><input class="inp" id="r-topic" name="topic" maxlength="80" placeholder="e.g. AVL Tree" required></div>
+   <div class="field"><label for="r-count">Number of questions</label><input class="inp" id="r-count" name="count" type="number" min="1" max="100" inputmode="numeric" value="20" required></div>
+   <div class="cols2"><div class="field"><label for="r-from">From page</label><input class="inp" id="r-from" name="from" type="number" min="1" inputmode="numeric" required></div><div class="field"><label for="r-to">To page</label><input class="inp" id="r-to" name="to" type="number" min="1" inputmode="numeric" required></div></div>
+   <div class="field"><label for="r-note">Note</label><textarea class="inp" id="r-note" name="note" maxlength="500" placeholder="Please focus on important definitions and frequently asked concepts."></textarea></div>
+   <p class="form-err" role="alert"></p><button class="btn pri block" type="submit">Send request</button></form>
+  <div><h2 style="margin-bottom:1rem">Your requests</h2>${rq.length?`<div style="display:grid;gap:1rem">${rq.map(r=>reqCard(r)).join('')}</div>`:empty('NO REQUESTS','Your MCQ requests will appear here.')}</div></div></div>`;
+}
+function profileView(){
+  const u=me(),at=db.attempts.filter(a=>a.userId===u.id),pass=at.filter(a=>a.passed).length;
+  return`<div class="wrap"><div class="page-h"><p class="eyebrow">Profile</p><h1>${esc(u.name)}</h1><p>${esc(u.email)} · ${u.role==='admin'?'Administrator':'Student'}</p></div>
+  <div class="stats"><div><b>${at.length}</b><span>Tests completed</span></div><div><b>${pass}</b><span>Tests passed</span></div><div><b>${at.length?Math.round(avg(at.map(a=>a.pct))):0}%</b><span>Average score</span></div><div><b>${Math.round(overallProg(u.id))}%</b><span>Overall progress</span></div></div>
+  <div style="margin-top:2rem"><button class="btn" data-act="logout">Log out</button></div></div>`;
+}
+function moreView(){
+  const items=[['request','Request MCQs','Ask for questions from a PDF page range'],['profile','Profile','Your stats and account']];
+  if(isAdmin())items.push(['admin','Admin','Manage content, users and requests']);
+  return`<div class="wrap"><div class="page-h"><p class="eyebrow">More</p><h1>Everything else</h1></div><div class="rows">${items.map(i=>`<button class="row-btn" data-go="${i[0]}"><span class="t">${i[1]}<span class="small muted" style="display:block;font-weight:400">${i[2]}</span></span><span aria-hidden="true">→</span></button>`).join('')}<button class="row-btn" data-act="logout"><span class="t">Log out</span><span aria-hidden="true">→</span></button></div></div>`;
+}
+
+/* ================= VIEWS: admin ================= */
+const ANAV=[['admin','Dashboard'],['admin/countdown','Countdown'],['admin/message','Home message'],['admin/subjects','Subjects'],['admin/lessons','Lessons'],['admin/topics','Topics'],['admin/tests','Tests'],['admin/questions','MCQs'],['admin/users','Users'],['admin/progress','Progress'],['admin/requests','Requests'],['admin/settings','Settings']];
+function adminShell(key,title,intro,body){
+  return`<div class="wrap"><div class="page-h"><p class="eyebrow">Admin</p><h1>${title}</h1>${intro?`<p>${intro}</p>`:''}</div>
+  <nav class="subnav" aria-label="Admin sections">${ANAV.map(n=>`<a href="#${n[0].replace('/','-')}" data-go="${n[0]}" ${n[0]===key?'aria-current="page"':''}>${n[1]}</a>`).join('')}</nav>${body}</div>`;
+}
+const ENT={
+  subject:{coll:'subjects',label:'Subject',parent:null,fields:[['name','Subject name','text',1],['description','Subject description','textarea'],['icon','Icon (1–2 characters)','text'],['order','Display order','number']]},
+  lesson:{coll:'lessons',label:'Lesson',parent:['subjectId','subjects','Subject'],fields:[['name','Lesson name','text',1],['description','Description','textarea'],['order','Order','number']]},
+  topic:{coll:'topics',label:'Topic',parent:['lessonId','lessons','Lesson'],fields:[['name','Topic name','text',1],['description','Description','textarea'],['order','Order','number']]}
+};
+function parentLabel(kind,item){
+  if(kind==='lesson'){const s=sub(item.subjectId);return s?s.name:'—'}
+  if(kind==='topic'){const l=les(item.lessonId),s=l&&sub(l.subjectId);return l?(s?s.name+' › ':'')+l.name:'—'}
+  return'';
+}
+function parentOptions(kind){
+  if(kind==='lesson')return sorted(db.subjects).map(s=>[s.id,s.name]);
+  if(kind==='topic')return db.lessons.slice().sort((a,b)=>(sub(a.subjectId)||{order:0}).order-(sub(b.subjectId)||{order:0}).order||a.order-b.order).map(l=>[l.id,((sub(l.subjectId)||{}).name||'')+' › '+l.name]);
+  return[];
+}
+function siblings(kind,item){const E=ENT[kind];return sorted(db[E.coll].filter(x=>!E.parent||x[E.parent[0]]===item[E.parent[0]]))}
+function adminEntities(kind){
+  const E=ENT[kind],q=ui.q.toLowerCase();
+  let list=sorted(db[E.coll]);
+  if(E.parent&&ui.fParent)list=list.filter(x=>x[E.parent[0]]===ui.fParent);
+  if(q)list=list.filter(x=>(x.name+' '+(x.description||'')).toLowerCase().includes(q));
+  const po=parentOptions(kind);
+  const body=`<div class="tools"><div class="field"><label for="q">Search</label><input class="inp" id="q" data-input="q" value="${esc(ui.q)}" placeholder="Search ${E.label.toLowerCase()}s"></div>
+  ${E.parent?`<div class="field"><label for="fp">${E.parent[2]}</label><select class="inp" id="fp" data-input="fParent"><option value="">All</option>${po.map(o=>`<option value="${o[0]}" ${ui.fParent===o[0]?'selected':''}>${esc(o[1])}</option>`).join('')}</select></div>`:''}
+  <button class="btn pri" data-act="entNew" data-k="${kind}">Add ${E.label.toLowerCase()}</button></div>
+  ${list.length?list.map(x=>`<div class="arow"><div class="info"><b>${esc(x.name)}</b><span class="small muted">${E.parent?esc(parentLabel(kind,x))+' · ':''}Order ${x.order}${kind==='lesson'?' · '+db.topics.filter(t=>t.lessonId===x.id).length+' topics':''}${kind==='subject'?' · '+db.lessons.filter(l=>l.subjectId===x.id).length+' lessons':''}</span></div>
+    <div class="ops"><span class="chip ${isOn(x)?'ok':'mu'}">${isOn(x)?'Enabled':'Disabled'}</span><button class="btn sm" data-act="entUp" data-k="${kind}" data-id="${x.id}" aria-label="Move up">▲</button><button class="btn sm" data-act="entDown" data-k="${kind}" data-id="${x.id}" aria-label="Move down">▼</button><button class="btn sm" data-act="entToggle" data-k="${kind}" data-id="${x.id}">${isOn(x)?'Disable':'Enable'}</button><button class="btn sm" data-act="entEdit" data-k="${kind}" data-id="${x.id}">Edit</button><button class="btn sm danger" data-act="entDel" data-k="${kind}" data-id="${x.id}">Delete</button></div></div>`).join(''):empty('NOTHING HERE YET',`Add your first ${E.label.toLowerCase()} to get started.`)}`;
+  return adminShell('admin/'+E.coll,E.label+'s','',body);
+}
+function adminDash(){
+  const pend=db.requests.filter(r=>r.status==='pending'||r.status==='review').length;
+  const st=[['Subjects',db.subjects.length],['Lessons',db.lessons.length],['Topics',db.topics.length],['MCQs',db.questions.length],['Users',db.users.filter(u=>u.role==='user').length],['Pending requests',pend]];
+  const rr=db.requests.slice().sort((a,b)=>b.at-a.at).slice(0,4),ru=db.users.slice().sort((a,b)=>b.at-a.at).slice(0,4),ra=db.attempts.slice().sort((a,b)=>b.at-a.at).slice(0,5);
+  return adminShell('admin','YOURTRACK Admin','',`<div class="stats">${st.map(s=>`<div><b>${s[1]}</b><span>${s[0]}</span></div>`).join('')}</div>
+  <div class="two" style="margin-top:2rem"><section><div class="sec-h" style="margin-top:0"><h2>Recent requests</h2><button class="link" data-go="admin/requests">All</button></div>${rr.map(r=>`<div class="arow"><div class="info"><b>${esc(r.topic)}</b><span class="small muted">${esc(userName(r.userId))} · ${r.count} questions</span></div><span class="chip ${r.status==='completed'?'ok':r.status==='rejected'?'bad':'or'}">${r.status}</span></div>`).join('')||empty('NO REQUESTS','Your MCQ requests will appear here.')}</section>
+  <section><div class="sec-h" style="margin-top:0"><h2>Recent tests</h2><button class="link" data-go="admin/progress">Progress</button></div>${ra.map(a=>`<div class="arow"><div class="info"><b>${esc(a.meta.title)}</b><span class="small muted">${esc(userName(a.userId))} · ${fmtD(a.at)}</span></div><span class="chip ${a.passed?'ok':'or'}">${Math.round(a.pct)}%</span></div>`).join('')||empty('NO TESTS YET','Results will appear here.')}</section></div>
+  <section><div class="sec-h"><h2>Recent users</h2><button class="link" data-go="admin/users">All</button></div>${ru.map(u=>`<div class="arow"><div class="info"><b>${esc(u.name)}</b><span class="small muted">${esc(u.email)}</span></div><span class="chip mu">${u.role}</span></div>`).join('')}</section>`);
+}
+const toLocalInput=t=>{const d=new Date(t);return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())+'T'+p2(d.getHours())+':'+p2(d.getMinutes())};
+function adminCountdown(){
+  const c=db.countdown||{title:'Exam starts in',target:Date.now()+7*DAY,enabled:true};
+  return adminShell('admin/countdown','Countdown','Shown on every student’s home page. It counts down to zero, then says THE DAY HAS ARRIVED.',`<form class="form card" data-form="countdown" style="max-width:560px" novalidate>
+   <div class="field"><label for="c-title">Title</label><input class="inp" id="c-title" name="title" value="${esc(c.title)}" maxlength="60" required></div>
+   <div class="field"><label for="c-date">Date and time</label><input class="inp" id="c-date" name="target" type="datetime-local" value="${toLocalInput(c.target)}" required></div>
+   <label class="chk"><input type="checkbox" name="enabled" ${c.enabled?'checked':''}> Show countdown on home page</label>
+   <p class="form-err" role="alert"></p>
+   <div style="display:flex;gap:.6rem;flex-wrap:wrap"><button class="btn pri" type="submit">${db.countdown?'Save changes':'Add countdown'}</button>${db.countdown?`<button class="btn danger" type="button" data-act="cdDelete">Delete</button>`:''}</div></form>`);
+}
+function adminMessage(){
+  const ed=ui.editMsg?db.messages.find(m=>m.id===ui.editMsg):null;
+  const list=db.messages.slice().sort((a,b)=>b.updated-a.updated);
+  return adminShell('admin/message','Home message','The latest enabled message is pinned on the home page. Only one is shown at a time.',`<div class="two"><form class="form card" data-form="message" novalidate><input type="hidden" name="id" value="${ed?ed.id:''}">
+   <div class="field"><label for="m-text">${ed?'Edit message':'New message'}</label><textarea class="inp" id="m-text" name="message" maxlength="160" required>${ed?esc(ed.message):''}</textarea><span class="hint">Up to 160 characters.</span></div>
+   <label class="chk"><input type="checkbox" name="on" ${!ed||ed.status==='on'?'checked':''}> Show on home page</label><p class="form-err" role="alert"></p>
+   <div style="display:flex;gap:.6rem;flex-wrap:wrap"><button class="btn pri" type="submit">${ed?'Save message':'Create message'}</button>${ed?`<button class="btn" type="button" data-act="msgCancel">Cancel</button>`:''}</div></form>
+   <div>${list.length?list.map(m=>`<div class="arow"><div class="info"><b style="font-weight:500">${esc(m.message)}</b><span class="small muted">${fmtD(m.updated)}</span></div><div class="ops"><span class="chip ${m.status==='on'?'ok':'mu'}">${m.status==='on'?'Active':'Off'}</span><button class="btn sm" data-act="msgToggle" data-id="${m.id}">${m.status==='on'?'Disable':'Enable'}</button><button class="btn sm" data-act="msgEdit" data-id="${m.id}">Edit</button><button class="btn sm danger" data-act="msgDel" data-id="${m.id}">Delete</button></div></div>`).join(''):empty('NO MESSAGES','Create a message to pin it on the home page.')}</div></div>`);
+}
+function adminTests(){
+  const q=ui.q.toLowerCase();
+  const list=db.tests.filter(t=>!q||(t.title+topicPath(t.topicId)).toLowerCase().includes(q));
+  return adminShell('admin/tests','Tests','Each test belongs to a topic and has its own timer, passing percentage and completion letter.',`<div class="tools"><div class="field"><label for="q">Search</label><input class="inp" id="q" data-input="q" value="${esc(ui.q)}" placeholder="Search tests"></div><button class="btn pri" data-act="testNew">Add test</button></div>
+  ${list.length?list.map(t=>{const n=db.questions.filter(x=>x.testId===t.id).length;return`<div class="arow"><div class="info"><b>${esc(t.title)}</b><span class="small muted">${esc(topicPath(t.topicId))}</span><span class="small muted">${n} questions · ${t.mode==='total'?t.minutes+' min total':t.secPerQ+' sec each'} · pass ${t.pass}%</span></div>
+   <div class="ops"><span class="chip ${isOn(t)?'ok':'mu'}">${isOn(t)?'Published':'Draft'}</span><button class="btn sm" data-go="admin/questions:${t.id}">Add / edit MCQs</button><button class="btn sm" data-act="testToggle" data-id="${t.id}">${isOn(t)?'Unpublish':'Publish'}</button><button class="btn sm" data-act="testEdit" data-id="${t.id}">Edit</button><button class="btn sm danger" data-act="testDel" data-id="${t.id}">Delete</button></div></div>`}).join(''):empty('NO TESTS YET','Add a test under a topic to start adding questions.')}`);
+}
+function adminQuestions(id){
+  const all=db.tests.slice();
+  if(!all.length)return adminShell('admin/questions','MCQs','Add MCQs to a test.',empty('NO TESTS YET','Create a test first, then add MCQs to it.',`<button class="btn pri" data-go="admin/tests">Go to Tests</button>`));
+  if(!id||!tst(id))id=(ui.fTest&&tst(ui.fTest)?ui.fTest:all[0].id);
+  ui.fTest=id;const t=tst(id);
+  const qs=db.questions.filter(x=>x.testId===id);
+  return adminShell('admin/questions','MCQs','Add, edit or disable the questions in a test.',`<div class="tools"><div class="field"><label for="ft">Test</label><select class="inp" id="ft" data-input="fTest">${all.map(x=>`<option value="${x.id}" ${x.id===id?'selected':''}>${esc(x.title)} (${db.questions.filter(q=>q.testId===x.id).length})</option>`).join('')}</select></div><button class="btn pri" data-act="qNew" data-t="${id}">+ Add MCQ</button></div>
+  <p class="small muted" style="margin-bottom:.8rem">${esc(topicPath(t.topicId))}</p>
+  ${qs.length?qs.map((x,i)=>`<div class="arow"><div class="info"><b>${i+1}. ${esc(x.q)}</b><span class="small muted">Answer: ${'ABCD'[x.c]}. ${esc(x.o[x.c])} · ${x.marks} mark${x.marks===1?'':'s'} · ${esc(x.diff)}</span></div><div class="ops"><span class="chip ${isOn(x)?'ok':'mu'}">${isOn(x)?'Active':'Off'}</span><button class="btn sm" data-act="qToggle" data-id="${x.id}">${isOn(x)?'Disable':'Enable'}</button><button class="btn sm" data-act="qEdit" data-id="${x.id}">Edit</button><button class="btn sm danger" data-act="qDel" data-id="${x.id}">Delete</button></div></div>`).join(''):empty('NO MCQS YET','Click “Add MCQ” to create the first question with four options and one correct answer.')}`);
+}
+function adminUsers(){
+  const q=ui.q.toLowerCase(),us=db.users.filter(u=>!q||(u.name+u.email).toLowerCase().includes(q));
+  return adminShell('admin/users','Users','',`<div class="tools"><div class="field"><label for="q">Search</label><input class="inp" id="q" data-input="q" value="${esc(ui.q)}" placeholder="Search by name or email"></div><button class="btn pri" data-act="adminNew">+ Add admin</button></div>
+  ${us.length?`<div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Tests</th><th>Average</th><th>Joined</th><th>Access</th></tr></thead><tbody>${us.map(u=>{const a=db.attempts.filter(x=>x.userId===u.id);return`<tr><td><b>${esc(u.name)}</b></td><td>${esc(u.email)}</td><td>${u.role}</td><td class="tnum">${a.length}</td><td class="tnum">${a.length?Math.round(avg(a.map(x=>x.pct)))+'%':'—'}</td><td>${fmtD(u.at)}</td><td>${u.id===db.session?'<span class="muted small">You</span>':`<button class="btn sm" data-act="roleToggle" data-id="${u.id}">${u.role==='admin'?'Make student':'Make admin'}</button>`}</td></tr>`}).join('')}</tbody></table></div>`:empty('NO USERS FOUND','Try a different search.')}`);
+}
+function adminProgress(){
+  const subs=sorted(db.subjects.filter(isOn)),us=db.users.filter(u=>u.role==='user');
+  return adminShell('admin/progress','Student progress','',us.length?`<div class="tbl-wrap"><table><thead><tr><th>Student</th>${subs.map(s=>`<th>${esc(s.name)}</th>`).join('')}<th>Overall</th><th>Tests</th></tr></thead><tbody>${us.map(u=>{const p=sub_=>{const v=subjectProg(u.id,sub_);return v===null?'—':Math.round(v)+'%'};return`<tr><td><b>${esc(u.name)}</b></td>${subs.map(s=>`<td class="tnum">${p(s.id)}</td>`).join('')}<td class="tnum"><b>${Math.round(overallProg(u.id))}%</b></td><td class="tnum">${db.attempts.filter(a=>a.userId===u.id).length}</td></tr>`}).join('')}</tbody></table></div>`:empty('NO STUDENTS YET','Student progress will appear here.'));
+}
+const RS={pending:'Pending',review:'Under review',processing:'Processing',completed:'Completed',rejected:'Rejected'};
+function adminRequests(){
+  const q=ui.q.toLowerCase();
+  const list=db.requests.filter(r=>(!ui.fStatus||r.status===ui.fStatus)&&(!q||(r.topic+r.subject+userName(r.userId)).toLowerCase().includes(q))).sort((a,b)=>b.at-a.at);
+  return adminShell('admin/requests','MCQ requests','Students ask for questions from a PDF page range. Update the status and reply here.',`<div class="tools"><div class="field"><label for="q">Search</label><input class="inp" id="q" data-input="q" value="${esc(ui.q)}" placeholder="User, subject or topic"></div><div class="field"><label for="fs">Status</label><select class="inp" id="fs" data-input="fStatus"><option value="">All</option>${Object.keys(RS).map(k=>`<option value="${k}" ${ui.fStatus===k?'selected':''}>${RS[k]}</option>`).join('')}</select></div></div>
+  ${list.length?`<div class="grid">${list.map(r=>reqCard(r,true)).join('')}</div>`:empty('NO REQUESTS','Your MCQ requests will appear here.')}`);
+}
+function adminSettings(){
+  return adminShell('admin/settings','Settings','',`<form class="form card" data-form="settings" style="max-width:520px" novalidate><div class="field"><label for="s-pass">Default passing percentage</label><input class="inp" id="s-pass" name="pass" type="number" min="1" max="100" value="${db.settings.defaultPass}"><span class="hint">Used when you add a new test.</span></div><p class="form-err" role="alert"></p><button class="btn pri" type="submit">Save settings</button></form>
+  <form class="form card" data-form="changePw" style="margin-top:1.5rem;max-width:520px" novalidate><h3>Change my password</h3><div class="field"><label for="pw-o">Current password</label><input class="inp" id="pw-o" name="old" type="password" autocomplete="current-password"></div><div class="field"><label for="pw-n">New password</label><input class="inp" id="pw-n" name="pw" type="password" autocomplete="new-password" minlength="6"></div><p class="form-err" role="alert"></p><button class="btn pri" type="submit">Update password</button></form>`);
+}
+
+/* ================= forms ================= */
+const F={
+  async adminreg(f){
+    const d=fd(f),email=String(d.email||'').trim().toLowerCase(),name=String(d.name||'').trim();
+    if(!name)return formErr(f,'Enter your name.');if(!/^\S+@\S+\.\S+$/.test(email))return formErr(f,'Enter a valid email address.');
+    if(String(d.password).length<6)return formErr(f,'Use at least 6 characters for your password.');if(d.password!==d.password2)return formErr(f,'The two passwords do not match.');
+    const btn=f.querySelector('[type=submit]');btn.disabled=true;btn.textContent='Creating...';
+    try{
+      const cred=await window.ytAuth.createUserWithEmailAndPassword(email,d.password),uid_=cred.user.uid;
+      const adminFlag=await window.ytDatabase.ref('yourtrack/meta/adminCreated').transaction(v=>v===true? v:true);
+      const isFirst=adminFlag.committed && adminFlag.snapshot.val()===true && !(await window.ytDatabase.ref('yourtrack/users').once('value')).exists();
+      const role=isFirst?'admin':'student';
+      const profile={uid:uid_,name:name.slice(0,60),email,role,createdAt:Date.now()};
+      await window.ytDatabase.ref('yourtrack/users/'+uid_).set(profile);
+      const snap=await window.ytDatabase.ref('yourtrack/appData').once('value');
+      db=normalizeDB(snap.val());db.users=db.users||[];db.users=db.users.filter(x=>x.id!==uid_);db.users.push({id:uid_,name:profile.name,email,role,at:profile.createdAt});db.session=uid_;save();toast(isFirst?'First admin account created.':'Student account created.','ok');go('home',true);
+    }catch(e){formErr(f,firebaseMessage(e));}finally{btn.disabled=false;btn.textContent='Create admin account'}
+  },
+  async register(f){
+    const d=fd(f),email=String(d.email||'').trim().toLowerCase(),name=String(d.name||'').trim();
+    if(!name)return formErr(f,'Enter your name.');if(!/^\S+@\S+\.\S+$/.test(email))return formErr(f,'Enter a valid email address.');
+    if(String(d.password).length<6)return formErr(f,'Use at least 6 characters for your password.');if(d.password!==d.password2)return formErr(f,'The two passwords do not match.');
+    const btn=f.querySelector('[type=submit]');btn.disabled=true;btn.textContent='Creating...';
+    try{const cred=await window.ytAuth.createUserWithEmailAndPassword(email,d.password),uid_=cred.user.uid;
+      const profile={uid:uid_,name:name.slice(0,60),email,role:'student',createdAt:Date.now()};
+      await window.ytDatabase.ref('yourtrack/users/'+uid_).set(profile);
+      const snap=await window.ytDatabase.ref('yourtrack/appData').once('value');db=normalizeDB(snap.val());db.users=db.users||[];db.users=db.users.filter(x=>x.id!==uid_);db.users.push({id:uid_,name:profile.name,email,role:'user',at:profile.createdAt});db.session=uid_;save();toast('Your account is ready.','ok','Welcome');go('home',true);
+    }catch(e){formErr(f,firebaseMessage(e));}finally{btn.disabled=false;btn.textContent='Create account'}
+  },
+  async login(f){
+    const d=fd(f),email=String(d.email||'').trim().toLowerCase();if(!email||!d.password)return formErr(f,'Enter your email and password.');
+    const btn=f.querySelector('[type=submit]');btn.disabled=true;btn.textContent='Logging in...';
+    try{const cred=await window.ytAuth.signInWithEmailAndPassword(email,d.password),uid_=cred.user.uid;
+      const ps=await window.ytDatabase.ref('yourtrack/users/'+uid_).once('value');let profile=ps.val();
+      if(!profile){profile={uid:uid_,name:email.split('@')[0],email,role:'student',createdAt:Date.now()};await window.ytDatabase.ref('yourtrack/users/'+uid_).set(profile)}
+      const snap=await window.ytDatabase.ref('yourtrack/appData').once('value');db=normalizeDB(snap.val());db.users=db.users||[];
+      db.users=db.users.filter(x=>x.id!==uid_);db.users.push({id:uid_,name:profile.name,email,role:profile.role==='admin'?'admin':'user',at:profile.createdAt||Date.now()});db.session=uid_;save();toast('Welcome back, '+first(profile.name)+'.','ok','Logged in');go('home',true);
+    }catch(e){formErr(f,firebaseMessage(e));}finally{btn.disabled=false;btn.textContent='Log in'}
+  },
+  async forgot(f){const email=String(fd(f).email||'').trim().toLowerCase();if(!/^\S+@\S+\.\S+$/.test(email))return formErr(f,'Enter a valid email address.');
+    try{await window.ytAuth.sendPasswordResetEmail(email);toast('Password reset link sent. Check your email.','ok','Email sent');go('login',true)}catch(e){formErr(f,firebaseMessage(e))}},
+  async adminUser(f){const d=fd(f),email=String(d.email||'').trim().toLowerCase(),u=db.users.find(x=>x.email===email);if(!u)return formErr(f,'Ask this person to register as a student first, then promote the account here.');try{await window.ytDatabase.ref('yourtrack/users/'+u.id+'/role').set('admin');u.role='admin';save();closeModal();toast(u.name+' is now an admin.','ok');render()}catch(e){formErr(f,firebaseMessage(e))}},
+  async changePw(f){const d=fd(f),user=window.ytAuth.currentUser;if(!user)return formErr(f,'Please log in again.');if(String(d.pw||'').length<6)return formErr(f,'Use at least 6 characters for the new password.');try{const cred=firebase.EmailAuthProvider.credential(user.email,d.old);await user.reauthenticateWithCredential(cred);await user.updatePassword(d.pw);f.reset();toast('Password updated.','ok')}catch(e){formErr(f,firebaseMessage(e))}},
+    request(f){const d=fd(f),u=me(),count=+d.count,from=+d.from,to=+d.to;
+    if(!d.subject)return formErr(f,'Choose a subject.');if(!String(d.topic).trim())return formErr(f,'Enter the topic.');
+    if(!Number.isInteger(count)||count<1||count>100)return formErr(f,'Number of questions must be between 1 and 100.');
+    if(!Number.isInteger(from)||!Number.isInteger(to)||from<1||to<from)return formErr(f,'Enter a valid page range. “To page” cannot be before “From page”.');
+    formErr(f,'');busy(f.querySelector('[type=submit]'),'Sending...',800,()=>{db.requests.push({id:db.nextReq++,userId:u.id,subject:d.subject,topic:String(d.topic).trim().slice(0,80),count,from,to,note:String(d.note||'').trim().slice(0,500),status:'pending',resp:'',at:Date.now()});save();toast('Your MCQ request has been submitted successfully.','ok','Request sent');ui.histTab='reqs';go('history')})},
+  countdown(f){const d=fd(f),t=new Date(d.target).getTime();if(!String(d.title).trim())return formErr(f,'Enter a title.');if(isNaN(t))return formErr(f,'Choose a date and time.');
+    db.countdown={title:String(d.title).trim().slice(0,60),target:t,enabled:!!d.enabled};save();toast('Countdown saved.','ok');render()},
+  message(f){const d=fd(f),m=String(d.message||'').trim();if(!m)return formErr(f,'Write a message first.');
+    if(d.on)db.messages.forEach(x=>{x.status='off'});
+    if(d.id){const x=db.messages.find(y=>y.id===d.id);if(x){x.message=m.slice(0,160);x.status=d.on?'on':'off';x.updated=Date.now()}}
+    else db.messages.push({id:uid('m'),message:m.slice(0,160),status:d.on?'on':'off',at:Date.now(),updated:Date.now()});
+    ui.editMsg=null;save();toast('Message saved.','ok');render()},
+  settings(f){const v=+fd(f).pass;if(!(v>=1&&v<=100))return formErr(f,'Enter a percentage between 1 and 100.');db.settings.defaultPass=v;save();toast('Settings saved.','ok')},
+  entity(f){const d=fd(f),E=ENT[d.kind];const name=String(d.name||'').trim();if(!name)return formErr(f,'Enter a name.');
+    if(E.parent&&!d[E.parent[0]])return formErr(f,'Choose a '+E.parent[2].toLowerCase()+'. Create one first if none exist.');
+    let item=d.id?db[E.coll].find(x=>x.id===d.id):null;
+    if(!item){item={id:uid(d.kind[0]),status:'on'};db[E.coll].push(item)}
+    const pk=E.parent?E.parent[0]:null;if(pk)item[pk]=d[pk];
+    item.name=name.slice(0,80);item.description=String(d.description||'').slice(0,300);if(d.kind==='subject')item.icon=String(d.icon||'').trim().slice(0,2)||name.slice(0,2).toUpperCase();
+    item.status=d.status==='off'?'off':'on';
+    const sibs=db[E.coll].filter(x=>x!==item&&(!pk||x[pk]===item[pk]));
+    item.order=Number.isFinite(+d.order)&&d.order!==''?+d.order:(sibs.length?Math.max(...sibs.map(x=>x.order))+1:1);
+    save();closeModal();toast(E.label+' saved.','ok');render()},
+  test(f){const d=fd(f);if(!String(d.title).trim())return formErr(f,'Enter a test title.');if(!d.topicId)return formErr(f,'Choose a topic. Create one first if none exist.');
+    const pass=+d.pass,mins=+d.minutes,spq=+d.secPerQ,req=+d.lreq;
+    if(!(pass>=1&&pass<=100))return formErr(f,'Passing percentage must be between 1 and 100.');
+    if(d.mode==='total'&&!(mins>=1))return formErr(f,'Enter the total minutes.');if(d.mode==='perq'&&!(spq>=5))return formErr(f,'Seconds per question must be at least 5.');
+    let t=d.id?tst(d.id):null;if(!t){t={id:uid('x')};db.tests.push(t)}
+    Object.assign(t,{topicId:d.topicId,title:String(d.title).trim().slice(0,80),mode:d.mode,minutes:mins||10,secPerQ:spq||30,pass,status:d.status==='off'?'off':'on',letter:{required:req>=1&&req<=100?req:pass,title:String(d.ltitle||'').slice(0,80),message:String(d.lmsg||'').slice(0,600),signature:String(d.lsig||'').slice(0,60)}});
+    save();closeModal();toast('Test saved.','ok');render()},
+  question(f){const d=fd(f);const o=[d.o0,d.o1,d.o2,d.o3].map(x=>String(x||'').trim());
+    if(!String(d.q).trim())return formErr(f,'Enter the question.');if(o.some(x=>!x))return formErr(f,'Fill in all four options.');
+    if(new Set(o).size<4)return formErr(f,'Each option must be different.');
+    const marks=+d.marks;if(!(marks>0))return formErr(f,'Marks must be greater than zero.');
+    let q=d.id?db.questions.find(x=>x.id===d.id):null;if(!q){q={id:uid('q'),testId:d.testId};db.questions.push(q)}
+    Object.assign(q,{q:String(d.q).trim().slice(0,400),o,c:+d.c,exp:String(d.exp||'').slice(0,500),marks,diff:d.diff,status:d.status==='off'?'off':'on'});
+    const more=f.dataset.more==='1';f.dataset.more='';const rc=!d.id&&ui.reqCtx;
+    if(rc){rc.added++;const r=db.requests.find(x=>x.id===rc.id);if(r&&(r.status==='pending'||r.status==='review')){r.status='processing'}}
+    save();closeModal();
+    if(rc&&more){toast('Question saved. Add the next one.','ok');render();questionForm(null,rc.testId);return}
+    toast('Question saved.','ok');if(rc)ui.reqCtx=null;render()},
+  reqManage(f){const d=fd(f),r=db.requests.find(x=>x.id===+d.id);if(!r)return;r.status=d.status;r.resp=String(d.resp||'').slice(0,500);save();closeModal();toast('Request updated.','ok');render()}
+};
+function entityForm(kind,id){
+  const E=ENT[kind],item=id?db[E.coll].find(x=>x.id===id):{status:'on',order:'',name:'',description:'',icon:''};
+  if(E.parent&&!(id?true:parentOptions(kind).length))return toast('Create a '+E.parent[2].toLowerCase()+' first.','err');
+  const po=parentOptions(kind),pk=E.parent?E.parent[0]:'';
+  openModal(`<h2>${id?'Edit':'Add'} ${E.label.toLowerCase()}</h2><form class="form" data-form="entity" novalidate><input type="hidden" name="kind" value="${kind}"><input type="hidden" name="id" value="${id||''}">
+  ${E.parent?`<div class="field"><label for="f-p">${E.parent[2]}</label><select class="inp" id="f-p" name="${pk}">${po.map(o=>`<option value="${o[0]}" ${(item[pk]||ui.fParent)===o[0]?'selected':''}>${esc(o[1])}</option>`).join('')}</select></div>`:''}
+  ${E.fields.map(f=>`<div class="field"><label for="f-${f[0]}">${f[1]}</label>${f[2]==='textarea'?`<textarea class="inp" id="f-${f[0]}" name="${f[0]}" maxlength="300">${esc(item[f[0]]||'')}</textarea>`:`<input class="inp" id="f-${f[0]}" name="${f[0]}" type="${f[2]}" value="${esc(item[f[0]]==null?'':item[f[0]])}" ${f[3]?'required':''} ${f[2]==='text'?'maxlength="80"':''}>`}</div>`).join('')}
+  <div class="field"><label for="f-st">Status</label><select class="inp" id="f-st" name="status"><option value="on" ${isOn(item)?'selected':''}>Enabled</option><option value="off" ${!isOn(item)?'selected':''}>Disabled</option></select></div>
+  <p class="form-err" role="alert"></p><div class="btns"><button type="button" class="btn" data-act="closeModal">Cancel</button><button class="btn pri" type="submit">Save</button></div></form>`);
+}
+function testForm(id){
+  const t=id?tst(id):{title:'',topicId:ui.fParent||'',mode:'total',minutes:10,secPerQ:30,pass:db.settings.defaultPass,status:'on',letter:{required:db.settings.defaultPass,title:'You did it!',message:'Another topic completed.\nKeep moving forward.',signature:'— YourTrack'}};
+  const po=parentOptions('topic').length?db.topics.map(x=>[x.id,topicPath(x.id)]):[];
+  if(!po.length)return toast('Create a topic first.','err');
+  const l=t.letter||{};
+  openModal(`<h2>${id?'Edit':'Add'} test</h2><form class="form" data-form="test" novalidate><input type="hidden" name="id" value="${id||''}">
+  <div class="field"><label for="t-title">Test title</label><input class="inp" id="t-title" name="title" value="${esc(t.title)}" maxlength="80" required></div>
+  <div class="field"><label for="t-topic">Topic</label><select class="inp" id="t-topic" name="topicId">${po.map(o=>`<option value="${o[0]}" ${t.topicId===o[0]?'selected':''}>${esc(o[1])}</option>`).join('')}</select></div>
+  <div class="field"><label for="t-mode">Timer type</label><select class="inp" id="t-mode" name="mode"><option value="total" ${t.mode==='total'?'selected':''}>Total test duration</option><option value="perq" ${t.mode==='perq'?'selected':''}>Time per question</option></select></div>
+  <div class="cols2"><div class="field"><label for="t-min">Total minutes</label><input class="inp" id="t-min" name="minutes" type="number" min="1" value="${t.minutes}"></div><div class="field"><label for="t-spq">Seconds per question</label><input class="inp" id="t-spq" name="secPerQ" type="number" min="5" value="${t.secPerQ}"></div></div>
+  <div class="cols2"><div class="field"><label for="t-pass">Passing percentage</label><input class="inp" id="t-pass" name="pass" type="number" min="1" max="100" value="${t.pass}"></div><div class="field"><label for="t-st">Status</label><select class="inp" id="t-st" name="status"><option value="on" ${isOn(t)?'selected':''}>Published</option><option value="off" ${!isOn(t)?'selected':''}>Draft</option></select></div></div>
+  <hr class="rule"><p class="eyebrow">Completion letter</p>
+  <div class="field"><label for="t-lreq">Completion percentage</label><input class="inp" id="t-lreq" name="lreq" type="number" min="1" max="100" value="${l.required||t.pass}"><span class="hint">The letter opens only at or above this score.</span></div>
+  <div class="field"><label for="t-lt">Letter title</label><input class="inp" id="t-lt" name="ltitle" value="${esc(l.title||'')}" maxlength="80"></div>
+  <div class="field"><label for="t-lm">Letter message</label><textarea class="inp" id="t-lm" name="lmsg" maxlength="600">${esc(l.message||'')}</textarea></div>
+  <div class="field"><label for="t-ls">Signature</label><input class="inp" id="t-ls" name="lsig" value="${esc(l.signature||'')}" maxlength="60"></div>
+  <p class="form-err" role="alert"></p><div class="btns"><button type="button" class="btn" data-act="closeModal">Cancel</button><button class="btn pri" type="submit">Save test</button></div></form>`);
+}
+function questionForm(id,testId){
+  const q=id?db.questions.find(x=>x.id===id):{q:'',o:['','','',''],c:0,exp:'',marks:1,diff:'Medium',status:'on'};
+  const rc=!id&&ui.reqCtx?db.requests.find(x=>x.id===ui.reqCtx.id):null;
+  openModal(`<h2>${id?'Edit':'Add'} question</h2>${rc?`<p class="exp"><b>Request #${rc.id}:</b> ${esc(rc.topic)} · ${rc.count} questions · pages ${rc.from}–${rc.to}<br>Added so far: <b>${ui.reqCtx.added}</b> of ${rc.count}</p>`:''}<form class="form" data-form="question" novalidate><input type="hidden" name="id" value="${id||''}"><input type="hidden" name="testId" value="${id?q.testId:testId}">
+  <div class="field"><label for="q-q">Question</label><textarea class="inp" id="q-q" name="q" maxlength="400" required>${esc(q.q)}</textarea></div>
+  ${[0,1,2,3].map(k=>`<div class="field"><label for="q-o${k}">Option ${'ABCD'[k]}</label><input class="inp" id="q-o${k}" name="o${k}" value="${esc(q.o[k])}" maxlength="200"></div>`).join('')}
+  <div class="cols2"><div class="field"><label for="q-c">Correct answer</label><select class="inp" id="q-c" name="c">${[0,1,2,3].map(k=>`<option value="${k}" ${q.c===k?'selected':''}>Option ${'ABCD'[k]}</option>`).join('')}</select></div><div class="field"><label for="q-m">Marks</label><input class="inp" id="q-m" name="marks" type="number" min="0.5" step="0.5" value="${q.marks}"></div></div>
+  <div class="cols2"><div class="field"><label for="q-d">Difficulty</label><select class="inp" id="q-d" name="diff">${['Easy','Medium','Hard'].map(x=>`<option ${q.diff===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="field"><label for="q-s">Status</label><select class="inp" id="q-s" name="status"><option value="on" ${isOn(q)?'selected':''}>Active</option><option value="off" ${!isOn(q)?'selected':''}>Disabled</option></select></div></div>
+  <div class="field"><label for="q-e">Explanation</label><textarea class="inp" id="q-e" name="exp" maxlength="500">${esc(q.exp)}</textarea></div>
+  <p class="form-err" role="alert"></p><div class="btns"><button type="button" class="btn" data-act="closeModal">Cancel</button>${rc?'<button type="button" class="btn" data-act="saveMore">Save &amp; add another</button>':''}<button class="btn pri" type="submit">Save question</button></div></form>`);
+}
+
+/* ================= chrome, routing, render ================= */
+const activeKey=b=>({home:'home',subjects:'subjects',subject:'subjects',topic:'subjects',test:'subjects',progress:'progress',history:'history',result:'history',request:'request',profile:'profile',more:'more'}[b]||(b.startsWith('admin')?'admin':'more'));
+function chrome(){
+  const [b]=parseRoute(),u=me(),k=activeKey(b);
+  document.body.classList.toggle('auth',['login','register','forgot','adminreg'].includes(b)||!u);
+  document.body.classList.toggle('in-test',b==='take');
+  if(!u){$('#top').innerHTML='';$('#tabs').innerHTML='';return}
+  const links=[['home','Home'],['subjects','Subjects'],['progress','Progress'],['history','History'],['request','Requests'],['profile','Profile']];
+  if(u.role==='admin')links.push(['admin','Admin']);
+  $('#top').innerHTML=`<div class="wrap"><button class="logo" data-go="home" aria-label="YOURTRACK home">YOUR<i>TRACK</i></button><nav class="top-links" aria-label="Main">${links.map(l=>`<a href="#${l[0]}" data-go="${l[0]}" ${k===l[0]?'aria-current="page"':''}>${l[1]}</a>`).join('')}</nav><span class="who">${esc(first(u.name))}</span></div>`;
+  const tabs=[['home','Home','home'],['subjects','Subjects','book'],['progress','Progress','chart'],['history','History','clock'],['more','More','more']];
+  const tk=['home','subjects','progress','history'].includes(k)?k:'more';
+  $('#tabs').innerHTML=tabs.map(t=>`<a href="#${t[0]}" data-go="${t[0]}" ${tk===t[0]?'aria-current="page"':''}>${ico(t[2])}<span>${t[1]}</span></a>`).join('');
+}
+function go(r,quick){
+  route=r;ui.q='';ui.fParent='';ui.fStatus='';ui.editMsg=null;window.scrollTo(0,0);clearTimeout(navTimer);
+  if(quick){render();return}
+  chrome();$('#app').innerHTML=skeleton();navTimer=setTimeout(render,160);
+}
+function render(){
+  try{
+    let [b,arg]=parseRoute();const auth=['login','register','forgot','adminreg'].includes(b),u=me();
+    if(!u&&!auth){route='login';b='login';arg=''}
+    else if(u&&auth){route='home';b='home';arg=''}
+    else if((b==='admin'||b.startsWith('admin/'))&&!(u&&u.role==='admin')){toast('That page is for admins only.','err');route='home';b='home';arg=''}
+    if(b==='take'&&!T){route='home';b='home'}
+    const ae=document.activeElement,keep=ae&&ae.id&&$('#app').contains(ae)?{id:ae.id,s:ae.selectionStart,e:ae.selectionEnd}:null;
+    chrome();
+    let html;
+    switch(b){
+      case'login':case'register':case'forgot':case'adminreg':html=authView(b);break;
+      case'home':html=homeView();break;
+      case'subjects':html=subjectsView();break;
+      case'subject':html=subjectView(arg);break;
+      case'topic':html=topicView(arg);break;
+      case'test':html=testIntro(arg);break;
+      case'take':html=takeView();break;
+      case'result':html=resultView(arg);break;
+      case'progress':html=progressView();break;
+      case'history':html=historyView();break;
+      case'request':html=requestView();break;
+      case'profile':html=profileView();break;
+      case'more':html=moreView();break;
+      case'admin':html=adminDash();break;
+      case'admin/countdown':html=adminCountdown();break;
+      case'admin/message':html=adminMessage();break;
+      case'admin/subjects':html=adminEntities('subject');break;
+      case'admin/lessons':html=adminEntities('lesson');break;
+      case'admin/topics':html=adminEntities('topic');break;
+      case'admin/tests':html=adminTests();break;
+      case'admin/questions':html=adminQuestions(arg);break;
+      case'admin/users':html=adminUsers();break;
+      case'admin/progress':html=adminProgress();break;
+      case'admin/requests':html=adminRequests();break;
+      case'admin/settings':html=adminSettings();break;
+      default:html=notFound();
+    }
+    $('#app').innerHTML=html;
+    if(b==='result')fresh=null;
+    animateBars();
+    if(keep){const el=document.getElementById(keep.id);if(el){el.focus();try{if(keep.s!=null)el.setSelectionRange(keep.s,keep.e)}catch(x){}}}
+  }catch(err){
+    console.error(err);
+    $('#app').innerHTML=`<div class="wrap">${empty('SOMETHING WENT WRONG','We couldn’t load this page.',`<button class="btn pri" data-act="retryRender">Try again</button>`)}</div>`;
+  }
+}
+
+/* ================= actions ================= */
+const delEntity=(kind,id)=>{
+  if(kind==='subject'){db.lessons.filter(l=>l.subjectId===id).forEach(l=>delEntity('lesson',l.id));db.subjects=db.subjects.filter(x=>x.id!==id)}
+  if(kind==='lesson'){db.topics.filter(t=>t.lessonId===id).forEach(t=>delEntity('topic',t.id));db.lessons=db.lessons.filter(x=>x.id!==id)}
+  if(kind==='topic'){db.tests.filter(t=>t.topicId===id).forEach(t=>delTest(t.id));db.topics=db.topics.filter(x=>x.id!==id)}
+};
+const delTest=id=>{db.questions=db.questions.filter(q=>q.testId!==id);db.tests=db.tests.filter(t=>t.id!==id)};
+function startTimers(){const x=T.test;T.start=Date.now();T.endAt=T.start+x.minutes*60000;T.qEnd=T.start+x.secPerQ*1000}
+function submitTest(auto){
+  if(!T||T.submitting)return;T.submitting=true;closeModal();
+  $('#app').innerHTML=`<div class="wrap"><div class="splash"><div class="spin"></div><h2>${auto?'Time is up. ':''}Checking your answers...</h2></div></div>`;
+  setTimeout(()=>{
+    const u=me(),t=T,secs=Math.round((Date.now()-t.start)/1000);
+    const att=buildAttempt(db,u.id,t.test,t.qs,t.ans,t.qs.filter(q=>t.marked[q.id]).map(q=>q.id),t.test.mode==='total'?Math.min(secs,t.test.minutes*60):secs,Date.now());
+    db.attempts.push(att);save();T=null;fresh=att.id;ui.reviewOpen=false;
+    toast('Your result has been saved.','ok','Test completed');go('result:'+att.id,true);
+  },900);
+}
+const A={
+  adminNew(){openModal(`<h2>Add admin</h2><p class="muted small">Enter a new person’s details, or the email of an existing student to promote them.</p><form class="form" data-form="adminUser" novalidate><div class="field"><label for="a-n">Full name</label><input class="inp" id="a-n" name="name" maxlength="60"></div><div class="field"><label for="a-e">Email</label><input class="inp" id="a-e" name="email" type="email"></div><div class="field"><label for="a-p">Password</label><input class="inp" id="a-p" name="password" type="password" autocomplete="new-password"><span class="hint">Not needed when promoting an existing student.</span></div><p class="form-err" role="alert"></p><div class="btns"><button type="button" class="btn" data-act="closeModal">Cancel</button><button class="btn pri" type="submit">Add admin</button></div></form>`)},
+  async roleToggle(el){const u=db.users.find(x=>x.id===el.dataset.id);if(u.role==='admin'&&db.users.filter(x=>x.role==='admin').length<2)return toast('There must be at least one admin.','err');u.role=u.role==='admin'?'user':'admin';try{await window.ytDatabase.ref('yourtrack/users/'+u.id+'/role').set(u.role==='admin'?'admin':'student');save();toast(u.name+' role updated.','ok');render()}catch(e){toast(firebaseMessage(e),'err')}},
+  fillDemo(el){$('#email').value=el.dataset.e;$('#password').value=el.dataset.p},
+  async logout(){T=null;try{await window.ytAuth.signOut()}catch(e){}db.session=null;go('login',true)},
+  retryNet(){if(navigator.onLine){$('#offline').hidden=true;toast('You are back online.','ok')}else toast('Still offline. Check your connection and try again.','err')},
+  retryRender(){render()},
+  closeModal(){closeModal()},
+  confirmYes(){const f=pending;closeModal();if(f)f()},
+  startTest(el){
+    const x=tst(el.dataset.id),qs=qsOf(x.id);if(!qs.length)return toast('This test has no questions yet.','err');
+    T={test:x,qs,i:0,ans:{},marked:{},submitting:false};startTimers();toast('Good luck.','', 'Test started');go('take',true)},
+  pick(el){const q=T.qs[T.i];T.ans[q.id]=+el.value;render()},
+  clearAns(){delete T.ans[T.qs[T.i].id];render()},
+  markQ(){const q=T.qs[T.i];T.marked[q.id]=!T.marked[q.id];render()},
+  prevQ(){if(T.i>0&&T.test.mode==='total'){T.i--;render()}},
+  nextQ(){if(T.i<T.qs.length-1){T.i++;if(T.test.mode==='perq')T.qEnd=Date.now()+T.test.secPerQ*1000;render()}},
+  gotoQ(el){if(T.test.mode==='total'){T.i=+el.dataset.i;render()}},
+  askSubmit(){const c=counts();openModal(`<h2>SUBMIT TEST?</h2><div class="counts" style="grid-template-columns:1fr"><div><span>Answered</span><b>${c.a}</b></div><div><span>Marked</span><b>${c.m}</b></div><div><span>Not answered</span><b>${c.u}</b></div></div><p>Are you sure you want to submit?</p><div class="btns"><button class="btn" data-act="closeModal">Continue test</button><button class="btn pri" data-act="doSubmit">Submit test</button></div>`)},
+  doSubmit(){submitTest(false)},
+  exitTest(){ask('Leave this test?','Your answers so far will be lost and no result will be saved.','Leave test',()=>{const id=T.test.id;T=null;go('test:'+id)},true)},
+  openLetter(){const e=$('#env');if(!e||e.classList.contains('open'))return;e.classList.add('open');
+    const h=$('#env-hint');if(h)h.textContent='Your letter';const t=$('#tap');if(t)t.style.visibility='hidden';
+    setTimeout(()=>{const z=$('#envzone');if(!z)return;const cols=['#CC5500','#4E342E','#E8B98A','#F2D9B0'];
+      for(let i=0;i<28;i++){const s=document.createElement('i'),ang=-Math.random()*Math.PI;s.className='cf';
+        s.style.cssText=`--dx:${Math.cos(ang)*(90+Math.random()*230)}px;--dy:${Math.sin(ang)*(120+Math.random()*200)}px;--r:${Math.random()*720-360}deg;--d:${Math.random()*.25}s;background:${cols[i%4]}`;z.appendChild(s);setTimeout(()=>s.remove(),2200)}},1500);
+    setTimeout(()=>{const w=$('#envwrap'),l=$('#letter');if(w)w.classList.add('gone');if(l){l.classList.add('show');setTimeout(()=>l.scrollIntoView({behavior:'smooth',block:'center'}),600)}},2400)},
+  toggleReview(){ui.reviewOpen=!ui.reviewOpen;render()},
+  histTab(el){ui.histTab=el.dataset.t;render()},
+  /* admin */
+  entNew(el){entityForm(el.dataset.k)},
+  entEdit(el){entityForm(el.dataset.k,el.dataset.id)},
+  entToggle(el){const E=ENT[el.dataset.k],x=db[E.coll].find(y=>y.id===el.dataset.id);x.status=isOn(x)?'off':'on';save();toast(E.label+(isOn(x)?' enabled.':' disabled.'),'ok');render()},
+  entDel(el){const k=el.dataset.k,E=ENT[k],x=db[E.coll].find(y=>y.id===el.dataset.id);ask('Delete '+E.label.toLowerCase()+'?',`“${esc(x.name)}” and everything inside it (lessons, topics, tests and questions) will be removed. Past results stay in History.`,'Delete',()=>{delEntity(k,x.id);save();toast(E.label+' deleted.','ok');render()},true)},
+  entUp(el){moveEnt(el,-1)},entDown(el){moveEnt(el,1)},
+  cdDelete(){ask('Delete countdown?','The home page will stop showing a countdown.','Delete',()=>{db.countdown=null;save();toast('Countdown deleted.','ok');render()},true)},
+  msgEdit(el){ui.editMsg=el.dataset.id;render()},msgCancel(){ui.editMsg=null;render()},
+  msgToggle(el){const m=db.messages.find(x=>x.id===el.dataset.id);if(m.status==='off')db.messages.forEach(x=>x.status='off');m.status=m.status==='on'?'off':'on';m.updated=Date.now();save();render()},
+  msgDel(el){ask('Delete message?','This pinned message will be removed.','Delete',()=>{db.messages=db.messages.filter(x=>x.id!==el.dataset.id);save();render()},true)},
+  testNew(){testForm()},testEdit(el){testForm(el.dataset.id)},
+  testToggle(el){const t=tst(el.dataset.id);t.status=isOn(t)?'off':'on';save();toast(isOn(t)?'Test published.':'Test moved to drafts.','ok');render()},
+  testDel(el){const t=tst(el.dataset.id);ask('Delete test?',`“${esc(t.title)}” and its questions will be removed. Past results stay in History.`,'Delete',()=>{delTest(t.id);save();toast('Test deleted.','ok');render()},true)},
+  qNew(el){ui.reqCtx=null;questionForm(null,el.dataset.t)},qEdit(el){ui.reqCtx=null;questionForm(el.dataset.id)},
+  saveMore(el){const f=el.closest('form');f.dataset.more='1';f.requestSubmit()},
+  reqAddMcq(el){const r=db.requests.find(x=>x.id===+el.dataset.id);if(!db.tests.length){toast('Create a test first, then add MCQs to it.','err');return go('admin/tests')}
+    openModal(`<h2>Add MCQ for request #${r.id}</h2><p class="muted small">${esc(r.topic)} · ${esc(r.subject)} · ${r.count} questions · pages ${r.from}–${r.to}</p>${r.note?`<p class="exp">${esc(r.note)}</p>`:''}<form class="form" data-form="reqPick" novalidate><input type="hidden" name="id" value="${r.id}"><div class="field"><label for="rp-t">Add the questions to this test</label><select class="inp" id="rp-t" name="testId">${db.tests.map(t=>`<option value="${t.id}">${esc(t.title)} (${db.questions.filter(q=>q.testId===t.id).length} questions)</option>`).join('')}</select></div><p class="hint">Need a new test? <button type="button" class="link" data-go="admin/tests">Create one under Tests</button> first.</p><div class="btns"><button type="button" class="btn" data-act="closeModal">Cancel</button><button class="btn pri" type="submit">Continue</button></div></form>`)},
+  qToggle(el){const q=db.questions.find(x=>x.id===el.dataset.id);q.status=isOn(q)?'off':'on';save();render()},
+  qDel(el){ask('Delete question?','This question will be removed from the test.','Delete',()=>{db.questions=db.questions.filter(x=>x.id!==el.dataset.id);save();toast('Question deleted.','ok');render()},true)},
+  manageReq(el){const r=db.requests.find(x=>x.id===+el.dataset.id);
+    openModal(`<h2>Request #${r.id}</h2><p class="muted">${esc(userName(r.userId))} · ${esc(r.subject)} › ${esc(r.topic)} · ${r.count} questions · pages ${r.from}–${r.to}</p>${r.note?`<p class="exp">${esc(r.note)}</p>`:''}
+    <form class="form" data-form="reqManage" novalidate><input type="hidden" name="id" value="${r.id}"><div class="field"><label for="rm-s">Status</label><select class="inp" id="rm-s" name="status">${Object.keys(RS).map(k=>`<option value="${k}" ${r.status===k?'selected':''}>${RS[k]}</option>`).join('')}</select></div>
+    <div class="field"><label for="rm-r">Response to student</label><textarea class="inp" id="rm-r" name="resp" maxlength="500">${esc(r.resp)}</textarea></div><div class="btns"><button type="button" class="btn" data-act="closeModal">Cancel</button><button class="btn pri" type="submit">Save</button></div></form>`)},
+  resetData(){toast('Demo data reset is no longer available.','err')}
+};
+function moveEnt(el,dir){
+  const E=ENT[el.dataset.k],item=db[E.coll].find(x=>x.id===el.dataset.id),sibs=siblings(el.dataset.k,item);
+  sibs.forEach((x,i)=>x.order=i+1);const i=sibs.indexOf(item),j=i+dir;if(j<0||j>=sibs.length)return;
+  const t=sibs[i].order;sibs[i].order=sibs[j].order;sibs[j].order=t;save();render();
+}
+
+/* ================= events ================= */
+document.addEventListener('click',e=>{
+  if(e.target.matches&&e.target.matches('[data-modal]')){closeModal();return}
+  const g=e.target.closest('[data-go]');
+  if(g){e.preventDefault();if(T&&route==='take')return;go(g.dataset.go);return}
+  const a=e.target.closest('[data-act]');
+  if(a&&A[a.dataset.act]){if(a.tagName==='A')e.preventDefault();A[a.dataset.act](a,e)}
+});
+document.addEventListener('submit',e=>{const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();if(F[f.dataset.form])F[f.dataset.form](f)});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.input){ui[t.dataset.input]=t.value;render()}});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&$('#modal-root').innerHTML){closeModal();return}
+  if(route!=='take'||!T||$('#modal-root').innerHTML||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)&&e.target.type!=='radio')return;
+  if(e.key==='ArrowRight'){A.nextQ()}else if(e.key==='ArrowLeft'){A.prevQ()}
+});
+function netState(){const off=!navigator.onLine;$('#offline').hidden=!off;$('#off-test').hidden=!(off&&T);if(off)toast('You are offline.','err','No connection')}
+window.addEventListener('offline',netState);
+window.addEventListener('online',()=>{$('#offline').hidden=true;toast('You are back online.','ok')});
+setInterval(()=>{
+  tickCountdown();
+  if(T&&!T.submitting&&route==='take'){
+    const rem=remaining(),tm=$('#tm'),tmr=$('#timer');
+    if(tm)tm.textContent=fmtT(Math.ceil(rem));if(tmr)tmr.classList.toggle('warn',rem<(T.test.mode==='perq'?8:60));
+    if(rem<=0){
+      if(T.test.mode==='total')submitTest(true);
+      else if(T.i<T.qs.length-1){T.i++;T.qEnd=Date.now()+T.test.secPerQ*1000;render();toast('Time is up for that question.','', 'Next question')}
+      else submitTest(true);
+    }
+  }
+},500);
+
+/* ================= boot ================= */
+route='login';db.session=null;
+$('#app').innerHTML=`<div class="wrap"><div class="splash"><div class="logo">YOUR<i>TRACK</i></div><div class="spin"></div><p class="muted">Loading your learning space...</p></div></div>`;
+document.body.classList.add('auth');
+setTimeout(()=>{render();if(!navigator.onLine)netState()},650);
+window.ytAuth.onAuthStateChanged(async authUser=>{
+  if(!authUser){db.session=null;route='login';render();return;}
+  try{const profileSnap=await window.ytDatabase.ref('yourtrack/users/'+authUser.uid).once('value');const profile=profileSnap.val();if(!profile){await window.ytAuth.signOut();return;}
+    const dataSnap=await window.ytDatabase.ref('yourtrack/appData').once('value');db=normalizeDB(dataSnap.exists()?dataSnap.val():null);db.users=db.users||[];db.users=db.users.filter(x=>x.id!==authUser.uid);db.users.push({id:authUser.uid,name:profile.name,email:profile.email,role:profile.role==='admin'?'admin':'user',at:profile.createdAt||Date.now()});db.session=authUser.uid;route='home';save();render();
+  }catch(e){console.error(e);toast(firebaseMessage(e),'err');}
+});
+})();
+</script>
+
+
+</body></html>
